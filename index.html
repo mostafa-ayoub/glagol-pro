@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ГЛАГОЛ PRO - TEST</title>
+<style>
+body { 
+  font-family: Arial, sans-serif; 
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white; 
+  text-align: center; 
+  padding: 50px;
+  margin: 0;
+}
+.container { 
+  max-width: 600px; 
+  margin: 0 auto; 
+  background: rgba(255,255,255,0.1); 
+  padding: 40px; 
+  border-radius: 20px; 
+  backdrop-filter: blur(10px);
+}
+h1 { font-size: 48px; margin-bottom: 20px; }
+.status { 
+  background: #4CAF50; 
+  color: white; 
+  padding: 15px 30px; 
+  border-radius: 10px; 
+  font-size: 18px; 
+  margin: 20px 0;
+}
+.info { 
+  background: rgba(255,255,255,0.2); 
+  padding: 20px; 
+  border-radius: 10px; 
+  margin: 10px 0;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎉 ГЛАГОЛ PRO</h1>
+  <div class="status">✅ النشر الناجح!</div>
+  <div class="info">
+    <h3>معلومات النشر:</h3>
+    <p>🌐 Railway: يعمل بنجاح</p>
+    <p>📱 Responsive: مدعوم</p>
+    <p>🔧 Server: Node.js Express</p>
+    <p>📊 Status: <span id="status">جاري التحقق...</span></p>
+  </div>
+  <button onclick="checkHealth()" style="background: #2196F3; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;">
+    تحقق من الصحة
+  </button>
+</div>
+
+<script>
+function checkHealth() {
+  document.getElementById('status').textContent = 'جاري التحقق...';
+  fetch('/health')
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('status').textContent = '✅ يعمل (' + new Date(data.timestamp).toLocaleTimeString() + ')';
+    })
+    .catch(error => {
+      document.getElementById('status').textContent = '❌ خطأ: ' + error.message;
+    });
+}
+
+// Auto check on load
+checkHealth();
+setInterval(checkHealth, 30000); // Check every 30 seconds
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  glagol-pro:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/glagol_pro
+      - HOST=0.0.0.0
+    depends_on:
+      - mongodb
+    networks:
+      - glagol-network
+
+  mongodb:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - glagol-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  glagol-network:
+    driver: bridge

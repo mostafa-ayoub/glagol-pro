@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ГЛАГОЛ PRO V6 — نظام إدارة المكتب المتقدم</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Playfair+Display:wght@600;700;800&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== ROOT ===== */
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface2: #f1f5f9;
+  --surface3: #e2e8f0;
+  --border: #e2e8f0;
+  --border2: #cbd5e1;
+  --ink: #0f172a;
+  --ink2: #334155;
+  --ink3: #64748b;
+  --accent: #3b82f6;
+  --accent2: #60a5fa;
+  --accent-light: rgba(59,130,246,0.08);
+  --gold: #f59e0b;
+  --gold2: #fbbf24;
+  --gold-light: rgba(245,158,11,0.1);
+  --red: #ef4444;
+  --red-light: rgba(239,68,68,0.08);
+  --green: #10b981;
+  --green-light: rgba(16,185,129,0.08);
+  --orange: #f97316;
+  --purple: #8b5cf6;
+  --purple-light: rgba(139,92,246,0.08);
+  --radius: 16px;
+  --radius-sm: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  --shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+  --sidebar-w: 280px;
+  --topbar-h: 72px;
+}
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface2: #334155;
+  --surface3: #475569;
+  --border: #475569;
+  --border2: #64748b;
+  --ink: #f1f5f9;
+  --ink2: #cbd5e1;
+  --ink3: #94a3b8;
+  --accent: #60a5fa;
+  --accent2: #93c5fd;
+  --accent-light: rgba(96,165,250,0.12);
+  --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Inter', 'Tajawal',sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; transition:all 0.3s; }
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:6px; }
+
+/* ===== LOGIN SCREEN ===== */
+#loginScreen {
+  position:fixed; inset:0; z-index:9999;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column;
+}
+#loginScreen::before {
+  content:'';
+  position:fixed; inset:0;
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(59,130,246,0.15) 0%, transparent 70%),
+              radial-gradient(ellipse 50% 40% at 90% 90%, rgba(139,92,246,0.08) 0%, transparent 60%);
+  pointer-events:none;
+}
+.login-box {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:48px 56px;
+  width:480px;
+  box-shadow: var(--shadow-lg);
+  text-align:center;
+  position:relative;
+  animation: loginReveal 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+@keyframes loginReveal {
+  from { opacity:0; transform:translateY(30px) scale(0.95); }
+  to { opacity:1; transform:translateY(0) scale(1); }
+}
+.login-logo {
+  font-family:'Playfair Display',serif;
+  font-size:52px; font-weight:800;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+  letter-spacing:8px;
+  margin-bottom:8px;
+  display:block;
+}
+.login-sub { font-size:14px; color:var(--ink3); margin-bottom:36px; line-height:1.7; }
+.login-field { 
+  margin-bottom:20px; text-align:right;
+}
+.login-field label { font-size:12px; color:var(--ink3); margin-bottom:8px; display:block; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
+.login-field input {
+  width:100%; padding:14px 18px;
+  border:2px solid var(--border);
+  border-radius:12px;
+  background:var(--surface2);
+  color:var(--ink); font-family:'Inter',sans-serif; font-size:15px;
+  outline:none; transition:all 0.3s;
+  text-align:right;
+}
+.login-field input:focus { border-color:var(--accent); background:var(--surface); box-shadow:0 0 0 4px var(--accent-light); }
+.login-btn {
+  width:100%; padding:16px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+  color:white;
+  border:none; border-radius:12px;
+  font-family:'Inter',sans-serif; font-size:16px; font-weight:700;
+  cursor:pointer; margin-top:12px;
+  transition:all 0.3s;
+  box-shadow: 0 4px 20px rgba(59,130,246,0.4);
+  letter-spacing:0.5px;
+}
+.login-btn:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(59,130,246,0.5); }
+.login-btn:active { transform:translateY(0); }
+.login-error { color:var(--red); font-size:13px; margin-top:12px; display:none; background:var(--red-light); padding:10px 16px; border-radius:10px; }
+.login-role-hint { font-size:12px; color:var(--ink3); margin-top:16px; background:var(--surface2); padding:10px 16px; border-radius:10px; font-family:'IBM Plex Mono',monospace; }
+.role-select { display:flex; gap:10px; margin-bottom:24px; }
+.role-btn {
+  flex:1; padding:12px; border:2px solid var(--border);
+  border-radius:12px; background:var(--surface2);
+  cursor:pointer; font-family:'Inter',sans-serif; font-size:14px;
+  color:var(--ink3); transition:all 0.3s; font-weight:600;
+}
+.role-btn.active { background:var(--accent-light); border-color:var(--accent); color:var(--accent); font-weight:700; box-shadow:0 0 0 3px rgba(59,130,246,0.15); }
+
+/* ===== LAYOUT ===== */
+#app { display:none; }
+#app.visible { display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+.topbar {
+  height:var(--topbar-h); background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 28px; flex-shrink:0; z-index:100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.topbar-left { display:flex; align-items:center; gap:16px; }
+.app-logo { 
+  font-family:'Playfair Display',serif; font-size:26px; font-weight:800; 
+  background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  letter-spacing:6px; 
+}
+.app-logo span { 
+  font-size:11px; color:var(--ink3); font-family:'IBM Plex Mono',monospace; 
+  font-weight:600; letter-spacing:1px; margin-right:12px;
+  -webkit-text-fill-color:var(--ink3); background:none;
+  background-clip:unset;
+  border:2px solid var(--border); padding:4px 10px; border-radius:6px;
+}
+.topbar-right { display:flex; align-items:center; gap:12px; }
+.tb-date { font-size:13px; color:var(--ink3); padding:8px 16px; border:1px solid var(--border); border-radius:24px; background:var(--surface2); font-family:'IBM Plex Mono',monospace; }
+.tb-user { font-size:13px; font-weight:700; padding:8px 16px; background:var(--accent-light); border-radius:24px; color:var(--accent); border:1px solid rgba(59,130,246,0.2); }
+.tb-btn {
+  width:40px; height:40px; border:2px solid var(--border); border-radius:12px;
+  background:none; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  font-size:16px; color:var(--ink3); transition:all 0.3s;
+}
+.tb-btn:hover { background:var(--surface2); color:var(--ink); border-color:var(--border2); transform:scale(1.05); }
+
+.body-wrap { display:flex; flex:1; overflow:hidden; }
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width:var(--sidebar-w); background:var(--surface);
+  border-left:1px solid var(--border);
+  overflow-y:auto; flex-shrink:0;
+  padding:20px 0;
+}
+.nav-group { margin-bottom:8px; }
+.nav-label { font-size:10px; color:var(--ink3); padding:12px 24px 6px; letter-spacing:2px; font-weight:700; text-transform:uppercase; font-family:'IBM Plex Mono',monospace; }
+.nav-item {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 24px; cursor:pointer;
+  border-right:3px solid transparent;
+  font-size:14px; color:var(--ink2); font-weight:500;
+  transition:all 0.2s; position:relative; margin:2px 12px; border-radius:12px;
+}
+.nav-item:hover { background:var(--surface2); color:var(--ink); margin:2px 12px; transform:translateX(2px); }
+.nav-item.active { background:var(--accent-light); color:var(--accent); border-right-color:transparent; font-weight:700; box-shadow:0 0 0 1px rgba(59,130,246,0.12); }
+.nav-item .ni { font-size:18px; width:24px; text-align:center; }
+.nav-badge { margin-right:auto; background:var(--accent); color:white; font-size:11px; font-weight:700; padding:2px 8px; border-radius:12px; font-family:'IBM Plex Mono',monospace; }
+.nav-badge.red { background:var(--red); }
+
+/* ===== MAIN ===== */
+.main { flex:1; overflow-y:auto; padding:28px 32px; background:var(--bg); }
+.page { display:none; animation:fadeIn 0.3s ease; }
+.page.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+/* ===== COMPONENTS ===== */
+.ph { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
+.ph-title { font-size:28px; font-weight:800; color:var(--ink); }
+.ph-title span { color:var(--accent); }
+.ph-actions { display:flex; gap:12px; }
+
+.btn {
+  padding:12px 20px; border:none; cursor:pointer;
+  border-radius:12px; font-family:'Inter',sans-serif; font-size:14px; font-weight:600;
+  display:inline-flex; align-items:center; gap:8px;
+  transition:all 0.2s;
+  letter-spacing:0.2px;
+}
+.btn:active { transform:scale(0.98); }
+.btn-primary { background:linear-gradient(135deg,var(--accent),var(--purple)); color:white; box-shadow:0 4px 12px rgba(59,130,246,0.3); }
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(59,130,246,0.4); }
+.btn-outline { background:none; border:2px solid var(--border2); color:var(--ink2); }
+.btn-outline:hover { background:var(--surface2); color:var(--ink); border-color:var(--border2); }
+.btn-gold { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:white; box-shadow:0 4px 12px rgba(245,158,11,0.3); }
+.btn-gold:hover { transform:translateY(-2px); }
+.btn-red { background:var(--red-light); color:var(--red); border:2px solid rgba(239,68,68,0.2); }
+.btn-green { background:var(--green-light); color:var(--green); border:2px solid rgba(16,185,129,0.2); }
+.btn-purple { background:var(--purple-light); color:var(--purple); border:2px solid rgba(139,92,246,0.2); }
+.btn-sm { padding:8px 16px; font-size:13px; border-radius:10px; }
+.btn-xs { padding:6px 12px; font-size:12px; border-radius:8px; }
+.btn-icon { width:40px; height:40px; padding:0; display:flex; align-items:center; justify-content:center; font-size:16px; }
+
+/* CARDS */
+.kpi-row { display:grid; gap:16px; margin-bottom:24px; }
+.kpi-row.cols4 { grid-template-columns:repeat(4,1fr); }
+.kpi-row.cols3 { grid-template-columns:repeat(3,1fr); }
+.kpi-row.cols2 { grid-template-columns:repeat(2,1fr); }
+.kcard {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:24px;
+  position:relative; overflow:hidden;
+  transition:all 0.3s;
+  box-shadow: var(--shadow);
+}
+.kcard:hover { transform:translateY(-4px); box-shadow:var(--shadow-lg); }
+.kcard::before { 
+  content:''; position:absolute; 
+  top:0; right:0; width:100px; height:100px;
+  background:var(--accent-light);
+  border-radius:50%;
+  transform:translate(30px,-40px);
+}
+.kcard.gold::before { background:var(--gold-light); }
+.kcard.green::before { background:var(--green-light); }
+.kcard.red::before { background:var(--red-light); }
+.kcard.purple::before { background:var(--purple-light); }
+.kcard::after { content:''; position:absolute; top:0; right:0; left:0; height:4px; background:linear-gradient(90deg,var(--accent),var(--purple)); border-radius:var(--radius) var(--radius) 0 0; }
+.kcard.gold::after { background:linear-gradient(90deg,var(--gold),var(--gold2)); }
+.kcard.green::after { background:linear-gradient(90deg,var(--green),#34d399); }
+.kcard.red::after { background:linear-gradient(90deg,var(--red),#f87171); }
+.kcard.purple::after { background:linear-gradient(90deg,var(--purple),#a78bfa); }
+.kcard-icon { font-size:32px; margin-bottom:16px; position:relative; }
+.kcard-val { font-size:32px; font-weight:800; color:var(--ink); margin-bottom:6px; font-family:'IBM Plex Mono',monospace; position:relative; }
+.kcard-val.accent { color:var(--accent); }
+.kcard-val.gold { color:var(--gold); }
+.kcard-val.green { color:var(--green); }
+.kcard-val.red { color:var(--red); }
+.kcard-val.purple { color:var(--purple); }
+.kcard-lbl { font-size:13px; color:var(--ink3); font-weight:600; position:relative; }
+
+/* TABLE */
+.tbox { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:24px; box-shadow:var(--shadow); }
+.tbox-head { display:flex; align-items:center; justify-content:space-between; padding:18px 24px; border-bottom:1px solid var(--border); background:var(--surface); }
+.tbox-title { font-size:16px; font-weight:700; color:var(--ink); display:flex; align-items:center; gap:8px; }
+.tbl { width:100%; border-collapse:collapse; }
+.tbl th { padding:12px 20px; font-size:12px; color:var(--ink3); text-align:right; border-bottom:1px solid var(--border); background:var(--surface2); font-weight:700; letter-spacing:0.5px; white-space:nowrap; text-transform:uppercase; }
+.tbl td { padding:14px 20px; font-size:14px; border-bottom:1px solid var(--border); vertical-align:middle; }
+.tbl tr:last-child td { border:none; }
+.tbl tr:hover td { background:var(--accent-light); }
+.tbl-empty { text-align:center; padding:48px; color:var(--ink3); font-size:15px; }
+
+/* BADGE */
+.badge { display:inline-flex; align-items:center; gap:4px; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap; }
+.badge::before { content:'●'; font-size:8px; }
+.badge-new { background:#dbeafe; color:#1d4ed8; }
+.badge-active { background:var(--accent-light); color:var(--accent); }
+.badge-done { background:var(--green-light); color:var(--green); }
+.badge-partial { background:rgba(245,158,11,0.12); color:var(--orange); }
+.badge-cancelled { background:var(--red-light); color:var(--red); }
+.badge-debt { background:var(--red-light); color:var(--red); font-size:11px; }
+.badge-paid { background:var(--green-light); color:var(--green); font-size:11px; }
+
+/* MODAL */
+.overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(15,23,42,0.7); z-index:1000;
+  align-items:center; justify-content:center;
+  backdrop-filter:blur(8px);
+}
+.overlay.open { display:flex; }
+.modal {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:20px; padding:36px; width:640px; max-width:95vw;
+  max-height:92vh; overflow-y:auto;
+  box-shadow:var(--shadow-lg);
+  position:relative;
+  animation:modalIn 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.modal.wide { width:880px; }
+.modal.narrow { width:480px; }
+@keyframes modalIn { from{transform:scale(0.95) translateY(20px);opacity:0} to{transform:scale(1) translateY(0);opacity:1} }
+.modal-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--border); }
+.modal-title { font-size:20px; font-weight:800; color:var(--ink); display:flex; align-items:center; gap:10px; }
+.modal-close { background:none; border:2px solid var(--border); font-size:18px; cursor:pointer; color:var(--ink3); width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:10px; transition:all 0.3s; }
+.modal-close:hover { background:var(--red-light); color:var(--red); border-color:rgba(239,68,68,0.2); }
+
+/* FORM */
+.fg { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+.fg label { font-size:12px; color:var(--ink3); font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
+.fg input, .fg select, .fg textarea {
+  background:var(--surface2); border:2px solid var(--border);
+  border-radius:12px; padding:12px 16px;
+  color:var(--ink); font-family:'Inter',sans-serif; font-size:14px;
+  outline:none; transition:all 0.3s; width:100%;
+}
+.fg input:focus, .fg select:focus, .fg textarea:focus { border-color:var(--accent); background:var(--surface); box-shadow:0 0 0 4px var(--accent-light); }
+.fg select option { background:var(--surface); }
+.fg textarea { resize:vertical; min-height:80px; }
+.fg-row { display:grid; gap:16px; }
+.fg-row.c2 { grid-template-columns:1fr 1fr; }
+.fg-row.c3 { grid-template-columns:1fr 1fr 1fr; }
+.divider { height:1px; background:var(--border); margin:20px 0; }
+
+/* SEARCH */
+.search-row { display:flex; gap:12px; margin-bottom:16px; }
+.search-inp {
+  flex:1; background:var(--surface); border:2px solid var(--border);
+  border-radius:12px; padding:12px 20px; color:var(--ink);
+  font-family:'Inter',sans-serif; font-size:14px; outline:none;
+  transition:all 0.3s; box-shadow:var(--shadow);
+}
+.search-inp:focus { border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-light); }
+.filter-sel {
+  background:var(--surface); border:2px solid var(--border);
+  border-radius:12px; padding:12px 16px; color:var(--ink);
+  font-family:'Inter',sans-serif; font-size:14px; outline:none;
+  cursor:pointer; box-shadow:var(--shadow);
+}
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--ink); color:var(--surface);
+  padding:14px 28px; border-radius:16px; font-size:14px; font-weight:600;
+  z-index:9999; opacity:0; pointer-events:none;
+  transition:all 0.3s cubic-bezier(0.16,1,0.3,1);
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+  white-space:nowrap;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* DRAG AND DROP */
+.draggable { cursor:move; }
+.dragging { opacity:0.5; }
+.drop-zone { border:2px dashed var(--accent); background:var(--accent-light); }
+
+/* TABS */
+.tabs { display:flex; gap:6px; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:0; }
+.tab {
+  padding:10px 20px; font-size:14px; font-weight:600;
+  color:var(--ink3); cursor:pointer; border-radius:10px 10px 0 0;
+  border:1px solid transparent; border-bottom:none;
+  margin-bottom:-1px; transition:all 0.2s;
+}
+.tab.active { background:var(--surface); color:var(--accent); border-color:var(--border); font-weight:700; }
+.tab:hover:not(.active) { color:var(--ink); }
+
+/* WORKFLOW STATUS */
+.wf-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 12px; border-radius:20px; font-size:12px; font-weight:700;
+  white-space:nowrap; letter-spacing:0.3px;
+}
+.wf-new       { background:#dbeafe; color:#1d4ed8; border:1px solid #93c5fd; }
+.wf-translate { background:#fef3c7; color:#d97706; border:1px solid #fcd34d; }
+.wf-review    { background:#ede9fe; color:#7c3aed; border:1px solid #c4b5fd; }
+.wf-notary    { background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; }
+.wf-ready     { background:#d1fae5; color:#065f46; border:1px solid #6ee7b7; }
+.wf-delivered { background:#f0fdf4; color:#16a34a; border:1px solid #86efac; }
+.wf-cancelled { background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; }
+
+/* ORDER ID BADGE */
+.order-id-badge {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px; font-weight:700;
+  color:var(--accent); background:var(--accent-light);
+  padding:4px 10px; border-radius:8px;
+  border:1px solid rgba(59,130,246,0.15);
+  letter-spacing:0.3px;
+}
+
+/* DASHBOARD GRID */
+.dash-today-grid {
+  display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:24px;
+}
+.today-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:20px;
+  text-align:center; cursor:pointer; transition:all 0.3s;
+  box-shadow:var(--shadow); position:relative; overflow:hidden;
+}
+.today-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-lg); }
+.today-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:4px; border-radius:0 0 var(--radius) var(--radius); }
+.tc-blue::after   { background:linear-gradient(90deg,#3b82f6,#60a5fa); }
+.tc-green::after  { background:linear-gradient(90deg,#10b981,#34d399); }
+.tc-orange::after { background:linear-gradient(90deg,#f59e0b,#fbbf24); }
+.tc-purple::after { background:linear-gradient(90deg,#8b5cf6,#a78bfa); }
+.tc-red::after    { background:linear-gradient(90deg,#ef4444,#f87171); }
+.today-num { font-family:'IBM Plex Mono',monospace; font-size:36px; font-weight:700; margin-bottom:6px; }
+.today-lbl { font-size:12px; color:var(--ink3); font-weight:600; }
+.tc-blue .today-num   { color:#3b82f6; }
+.tc-green .today-num  { color:#10b981; }
+.tc-orange .today-num { color:#f59e0b; }
+.tc-purple .today-num { color:#8b5cf6; }
+.tc-red .today-num    { color:#ef4444; }
+
+/* PIPELINE */
+.pipeline-wrap {
+  display:flex; gap:12px; margin-bottom:24px; overflow-x:auto; padding-bottom:8px;
+}
+.pipeline-stage {
+  flex:1; min-width:140px; background:var(--surface);
+  border:1px solid var(--border); border-radius:var(--radius);
+  padding:16px; box-shadow:var(--shadow); cursor:pointer; transition:all 0.3s;
+}
+.pipeline-stage:hover { border-color:var(--accent); transform:translateY(-2px); }
+.ps-label { font-size:11px; font-weight:700; color:var(--ink3); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.ps-count { font-family:'IBM Plex Mono',monospace; font-size:32px; font-weight:800; color:var(--ink); }
+.ps-dot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-left:6px; }
+
+/* PROFIT METER */
+.profit-meter {
+  background:linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border-radius:var(--radius); padding:24px 28px;
+  color:white; position:relative; overflow:hidden;
+}
+.profit-meter::before {
+  content:''; position:absolute; top:-40px; left:-40px;
+  width:140px; height:140px; background:rgba(59,130,246,0.15);
+  border-radius:50%;
+}
+.pm-title { font-size:12px; color:rgba(255,255,255,0.6); font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+.pm-val { font-family:'IBM Plex Mono',monospace; font-size:40px; font-weight:800; color:#60a5fa; margin-bottom:6px; }
+.pm-sub { font-size:13px; color:rgba(255,255,255,0.5); }
+.pm-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-top:16px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.1); }
+.pm-item .pm-item-val { font-family:'IBM Plex Mono',monospace; font-size:18px; font-weight:700; }
+.pm-item .pm-item-lbl { font-size:11px; color:rgba(255,255,255,0.4); margin-top:2px; }
+.pm-item.green .pm-item-val { color:#34d399; }
+.pm-item.red .pm-item-val   { color:#f87171; }
+.pm-item.gold .pm-item-val  { color:#fbbf24; }
+
+/* CHART */
+.bar-chart { display:flex; align-items:flex-end; gap:8px; height:120px; }
+.bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; }
+.bar { width:100%; background:var(--accent); border-radius:4px 4px 0 0; transition:height 0.4s ease; cursor:pointer; }
+.bar:hover { background:var(--accent2); }
+.bar-lbl { font-size:10px; color:var(--ink3); }
+
+/* PERMISSIONS */
+.perm-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border); }
+.perm-row:last-child { border:none; }
+.perm-info { font-size:14px; }
+.perm-desc { font-size:12px; color:var(--ink3); margin-top:2px; }
+.toggle { position:relative; width:44px; height:24px; }
+.toggle input { opacity:0; width:0; height:0; }
+.slider {
+  position:absolute; inset:0; background:var(--border2);
+  border-radius:12px; cursor:pointer; transition:0.3s;
+}
+.slider::before {
+  content:''; position:absolute; height:18px; width:18px;
+  right:3px; top:3px; background:white;
+  border-radius:50%; transition:0.3s;
+}
+input:checked + .slider { background:var(--accent); }
+input:checked + .slider::before { transform:translateX(-20px); }
+
+/* THEME CUSTOMIZER */
+.theme-colors { display:flex; gap:12px; flex-wrap:wrap; margin-top:12px; }
+.color-btn {
+  width:40px; height:40px; border-radius:50%; cursor:pointer;
+  border:3px solid transparent; transition:all 0.3s;
+}
+.color-btn.active, .color-btn:hover { border-color:var(--ink); transform:scale(1.1); }
+
+/* PROFIT SUMMARY */
+.profit-panel {
+  background:linear-gradient(135deg,var(--accent-light),rgba(44,74,110,0.04));
+  border:1px solid var(--accent);
+  border-radius:12px; padding:20px; margin-top:16px;
+}
+.profit-panel .pp-title { font-size:13px; font-weight:700; color:var(--accent); margin-bottom:16px; letter-spacing:0.5px; }
+.pp-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; font-size:14px; }
+.pp-row .lbl { color:var(--ink3); }
+.pp-row .val { font-weight:600; }
+.pp-row .plus { color:var(--green); }
+.pp-row .minus { color:var(--red); }
+.pp-row .total { color:var(--accent); font-size:18px; font-weight:800; }
+.pp-div { height:1px; background:rgba(44,74,110,0.2); margin:10px 0; }
+
+/* RESPONSIVE */
+@media (max-width:1200px) {
+  .kpi-row.cols4 { grid-template-columns:1fr 1fr; }
+  .dash-today-grid { grid-template-columns:repeat(3,1fr); }
+}
+@media (max-width:900px) {
+  .sidebar { width:240px; }
+  .dash-today-grid { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:768px) {
+  .main { padding:20px; }
+  .ph { flex-direction:column; gap:16px; align-items:flex-start; }
+  .dash-today-grid { grid-template-columns:1fr; }
+  .kpi-row.cols4 { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginScreen">
+  <div class="login-box">
+    <span class="login-logo">ГЛАГОЛ</span>
+    <div class="login-sub">نظام إدارة المكتب المتقدم<br><span style="font-size:12px;font-family:'IBM Plex Mono',monospace;">Система управления бюро переводов</span></div>
+    <div class="role-select">
+      <button class="role-btn active" onclick="selectRole('admin',this)">👑 مدير</button>
+      <button class="role-btn" onclick="selectRole('reception',this)">🗂️ استقبال</button>
+      <button class="role-btn" onclick="selectRole('translator',this)">👤 مترجم</button>
+    </div>
+    <div class="login-field">
+      <label>كلمة المرور / Пароль</label>
+      <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">🔐 دخول / Войти</button>
+    <div class="login-error" id="loginError">❌ كلمة المرور غير صحيحة / Неверный пароль</div>
+    <div class="login-role-hint">admin: admin123 &nbsp;·&nbsp; recep: recep123 &nbsp;·&nbsp; staff: staff123</div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="app-logo">ГЛАГОЛ <span>PRO V6</span></div>
+      <div class="tb-date" id="tbDate"></div>
+    </div>
+    <div class="topbar-right">
+      <div class="tb-user" id="tbUser"></div>
+      <button class="tb-btn" id="lang-btn" onclick="toggleLang()" title="تغيير اللغة / Язык" style="font-size:13px;font-weight:700;width:auto;padding:0 12px;">AR</button>
+      <button class="tb-btn" onclick="toggleTheme()" title="تبديل المظهر">🌙</button>
+      <button class="tb-btn" onclick="doLogout()" title="تسجيل الخروج">🚪</button>
+    </div>
+  </div>
+
+  <div class="body-wrap">
+    <div class="sidebar" id="sidebar">
+      <div class="nav-group">
+        <div class="nav-label" id="nav-label-main">الرئيسية</div>
+        <div class="nav-item active" id="nav-item-dashboard" onclick="nav('dashboard',this)"><span class="ni">📊</span> <span id="nav-item-dashboard">لوحة التحكم</span></div>
+        <div class="nav-item" id="nav-item-orders" onclick="nav('orders',this)"><span class="ni">📋</span> <span id="nav-text-orders">طلبات العملاء</span> <span class="nav-badge" id="nb-orders"></span></div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label" id="nav-label-services">الخدمات / Услуги</div>
+        <div class="nav-item" onclick="nav('services',this)"><span class="ni">📃</span> <span id="nav-item-services">قائمة الخدمات</span></div>
+      </div>
+      <div class="nav-group" id="nav-companies-group">
+        <div class="nav-label" id="nav-label-companies">الشركات</div>
+        <div class="nav-item" onclick="nav('companies',this)"><span class="ni">🏢</span> <span id="nav-item-companies">إدارة الشركات</span></div>
+        <div class="nav-item" onclick="nav('company-docs',this)"><span class="ni">📄</span> <span id="nav-item-company-docs">مستندات الشركات</span></div>
+        <div class="nav-item" onclick="nav('statements',this)"><span class="ni">📑</span> <span id="nav-item-statements">كشوفات الحساب</span> <span class="nav-badge red" id="nb-debts"></span></div>
+      </div>
+      <div class="nav-group" id="nav-finance-group">
+        <div class="nav-label" id="nav-label-finance">المالية</div>
+        <div class="nav-item" onclick="nav('finance',this)"><span class="ni">💰</span> <span id="nav-item-finance">الحسابات العامة</span></div>
+        <div class="nav-item" onclick="nav('reports',this)"><span class="ni">📈</span> <span id="nav-item-reports">التقارير والجرد</span></div>
+      </div>
+      <div class="nav-group" id="nav-admin-group">
+        <div class="nav-label" id="nav-label-admin">الإدارة</div>
+        <div class="nav-item" onclick="nav('staff',this)"><span class="ni">👥</span> <span id="nav-item-staff">الموظفون</span></div>
+        <div class="nav-item" onclick="nav('settings',this)"><span class="ni">⚙️</span> <span id="nav-item-settings">الإعدادات</span></div>
+        <div class="nav-item" onclick="nav('control',this)"><span class="ni">🖥️</span> <span id="nav-item-control">التحكم بالنظام</span></div>
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="ph">
+          <div class="ph-title"><span id="dash-title-1">لوحة</span> <span id="dash-title-2">التحكم</span></div>
+          <div class="ph-actions">
+            <button class="btn btn-primary" id="btn-new-order" onclick="openModal('modal-order')">+ طلب جديد</button>
+            <button class="btn btn-outline" id="btn-new-doc" onclick="openModal('modal-company-doc')">+ مستند شركة</button>
+          </div>
+        </div>
+        <!-- TODAY STATS -->
+        <div class="dash-today-grid" id="dash-today"></div>
+        <!-- PROFIT METER + PIPELINE -->
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:20px;margin-bottom:24px;">
+          <div id="dash-profit-meter"></div>
+          <div class="tbox">
+            <div class="tbox-head"><div class="tbox-title" id="dash-weekly-title">📊 الإيرادات (7 أيام)</div></div>
+            <div style="padding:20px;"><div class="bar-chart" id="weekChart"></div><div style="display:flex;gap:8px;margin-top:8px;" id="weekLabels"></div></div>
+          </div>
+        </div>
+        <!-- KPI ROW -->
+        <div class="kpi-row cols4" id="dash-kpis"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
+          <div class="tbox">
+            <div class="tbox-head"><div class="tbox-title" id="dash-debts-title">🏢 ديون الشركات</div><button class="btn btn-sm btn-outline" id="btn-view-debts" onclick="nav('statements',null)">عرض</button></div>
+            <div id="dash-debts" style="padding:12px 0;"></div>
+          </div>
+          <div class="tbox">
+            <div class="tbox-head"><div class="tbox-title" id="dash-notes-title">📌 ملاحظات اليوم</div></div>
+            <div style="padding:16px;">
+              <textarea id="dashNotes" style="width:100%;height:120px;background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:12px;font-family:Inter,Tajawal,sans-serif;font-size:14px;color:var(--ink);outline:none;resize:none;" placeholder="اكتب ملاحظات اليوم..." oninput="DB.notes=this.value;save()"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="tbox">
+          <div class="tbox-head"><div class="tbox-title" id="dash-recent-title">🕐 آخر الطلبات</div><button class="btn btn-sm btn-outline" id="btn-view-all-orders" onclick="nav('orders',null)">عرض الكل</button></div>
+          <div id="dash-recent"></div>
+        </div>
+      </div>
+
+      <!-- SERVICES -->
+      <div class="page" id="page-services">
+        <div class="ph">
+          <div class="ph-title">قائمة الخدمات <span>والأسعار</span> / <span style="font-size:16px;color:var(--ink3);">Услуги и цены</span></div>
+          <button class="btn btn-primary" onclick="openModal('modal-service')">+ إضافة خدمة</button>
+        </div>
+        <div class="search-row">
+          <input class="search-inp" id="srv-search" placeholder="🔍 بحث... / Поиск..." oninput="renderServices()">
+          <select class="filter-sel" id="srv-cat-f" onchange="renderServices()">
+            <option value="">كل الفئات / Все</option>
+          </select>
+        </div>
+        <div id="services-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"></div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="page" id="page-orders">
+        <div class="ph">
+          <div class="ph-title">طلبات <span>العملاء</span></div>
+          <button class="btn btn-primary" onclick="openModal('modal-order')">+ طلب جديد</button>
+        </div>
+        <div id="orders-container"></div>
+      </div>
+
+      <!-- COMPANIES -->
+      <div class="page" id="page-companies">
+        <div class="ph">
+          <div class="ph-title">الشركات <span>والعملاء</span></div>
+          <button class="btn btn-primary" onclick="openModal('modal-company')">+ إضافة شركة</button>
+        </div>
+        <div id="companies-container"></div>
+      </div>
+
+      <!-- STATEMENTS -->
+      <div class="page" id="page-statements">
+        <div class="ph">
+          <div class="ph-title">كشوفات <span>الحسابات</span></div>
+        </div>
+        <div id="statements-container"></div>
+      </div>
+
+      <!-- FINANCE -->
+      <div class="page" id="page-finance">
+        <div class="ph">
+          <div class="ph-title">المالية <span>والمحاسبة</span></div>
+        </div>
+        <div id="finance-container"></div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="page" id="page-reports">
+        <div class="ph">
+          <div class="ph-title">التقارير <span>والإحصائيات</span></div>
+        </div>
+        <div id="reports-container"></div>
+      </div>
+
+      <!-- STAFF -->
+      <div class="page" id="page-staff">
+        <div class="ph">
+          <div class="ph-title">الموظفون <span>والصلاحيات</span></div>
+          <button class="btn btn-primary" onclick="openModal('modal-staff')">+ إضافة موظف</button>
+        </div>
+        <div id="staff-container"></div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="page" id="page-settings">
+        <div class="ph">
+          <div class="ph-title">الإعدادات <span>العامة</span></div>
+        </div>
+        <div class="tbox">
+          <div class="tbox-head"><div class="tbox-title">🏢 معلومات المكتب</div></div>
+          <div style="padding:20px;">
+            <div class="fg"><label>اسم المكتب</label><input id="s-office-name"></div>
+            <div class="fg"><label>العنوان</label><input id="s-office-addr"></div>
+            <div class="fg"><label>الهاتف</label><input id="s-office-phone"></div>
+            <div class="fg"><label>الألوان</label><div id="colorPalette" class="theme-colors"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTROL PANEL -->
+      <div class="page" id="page-control">
+        <div class="ph">
+          <div class="ph-title">التحكم <span>بالنظام</span></div>
+        </div>
+        <div class="kpi-row cols3">
+          <div class="kcard purple">
+            <div class="kcard-icon">🖥️</div>
+            <div class="kcard-val purple">نظام التشغيل</div>
+            <div class="kcard-lbl">إدارة الكمبيوتر</div>
+          </div>
+          <div class="kcard gold">
+            <div class="kcard-icon">📁</div>
+            <div class="kcard-val gold">الملفات</div>
+            <div class="kcard-lbl">إدارة الملفات والمجلدات</div>
+          </div>
+          <div class="kcard green">
+            <div class="kcard-icon">🌐</div>
+            <div class="kcard-val green">الشبكة</div>
+            <div class="kcard-lbl">مراقبة الاتصال</div>
+          </div>
+        </div>
+        <div class="tbox">
+          <div class="tbox-head"><div class="tbox-title">🔧 أوامر النظام</div></div>
+          <div style="padding:20px;">
+            <div class="fg">
+              <label>أمر مخصص</label>
+              <div style="display:flex;gap:10px;">
+                <input type="text" id="customCommand" placeholder="أدخل أمر النظام..." style="flex:1;">
+                <button class="btn btn-primary" onclick="executeSystemCommand()">تنفيذ</button>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <button class="btn btn-outline" onclick="executeSystemCommand('systeminfo')">📊 معلومات النظام</button>
+              <button class="btn btn-outline" onclick="executeSystemCommand('tasklist')">📋 قائمة العمليات</button>
+              <button class="btn btn-outline" onclick="executeSystemCommand('netstat -an')">🌐 منافذ الشبكة</button>
+              <button class="btn btn-outline" onclick="executeSystemCommand('dir')">📁 الملفات الحالية</button>
+              <button class="btn btn-outline" onclick="executeSystemCommand('ipconfig /all')">🌍 معلومات الشبكة</button>
+              <button class="btn btn-outline" onclick="executeSystemCommand('wmic logicaldisk get size,freespace,caption')">💾 مساحات القرص</button>
+            </div>
+          </div>
+        </div>
+        <div class="tbox">
+          <div class="tbox-head"><div class="tbox-title">📤 نتائج التنفيذ</div></div>
+          <div style="padding:20px;">
+            <div id="commandOutput" style="background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:16px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink);min-height:200px;max-height:400px;overflow-y:auto;white-space:pre-wrap;">نتائج الأوامر ستظهر هنا...</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end main -->
+  </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+<!-- SERVICE MODAL -->
+<div class="overlay" id="modal-service">
+<div class="modal narrow">
+  <div class="modal-hdr">
+    <div class="modal-title">📃 إضافة خدمة / Добавить услугу</div>
+    <button class="modal-close" onclick="closeModal('modal-service')">✕</button>
+  </div>
+  <input type="hidden" id="sv-edit-id">
+  <div class="fg"><label>اسم الخدمة (عربي/روسي) *</label><input id="sv-name" placeholder="مثال: ПЕРЕВОД ПАСПОРТА / ترجمة جواز سفر"></div>
+  <div class="fg-row c2">
+    <div class="fg"><label>الفئة / Категория</label>
+      <select id="sv-cat">
+        <option>ترجمة وثائق</option><option>نوتاريوس</option>
+        <option>تصديق وزارات</option><option>تصديق سفارات</option>
+        <option>أبوستيل</option><option>أخرى</option>
+      </select>
+    </div>
+    <div class="fg"><label>السعر الافتراضي ₽</label><input type="number" id="sv-price" placeholder="700"></div>
+  </div>
+  <div style="display:flex;gap:12px;margin-top:16px;">
+    <button class="btn btn-primary" style="flex:1" onclick="saveService()">💾 حفظ</button>
+    <button class="btn btn-outline" onclick="closeModal('modal-service')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="overlay" id="modal-order">
+<div class="modal">
+  <div class="modal-hdr">
+    <div class="modal-title">📋 طلب جديد / Новый заказ</div>
+    <button class="modal-close" onclick="closeModal('modal-order')">✕</button>
+  </div>
+  <input type="hidden" id="order-edit-id">
+  <div class="fg"><label>اسم العميل *</label><input id="order-client" placeholder="أدخل اسم العميل"></div>
+  <div class="fg"><label>رقم الهاتف</label><input id="order-phone" placeholder="رقم الهاتف"></div>
+  <div class="fg"><label>الخدمة *</label>
+    <select id="order-service" onchange="updateOrderPrice()">
+      <option value="">اختر الخدمة</option>
+    </select>
+  </div>
+  <div class="fg-row c2">
+    <div class="fg"><label>السعر ₽</label><input type="number" id="order-price" placeholder="0"></div>
+    <div class="fg"><label>المدفوع ₽</label><input type="number" id="order-paid" placeholder="0"></div>
+  </div>
+  <div class="fg"><label>ملاحظات</label><textarea id="order-notes" rows="3" placeholder="ملاحظات إضافية"></textarea></div>
+  <div style="display:flex;gap:12px;margin-top:16px;">
+    <button class="btn btn-primary" style="flex:1" onclick="saveOrder()">💾 حفظ الطلب</button>
+    <button class="btn btn-outline" onclick="closeModal('modal-order')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<!-- COMPANY MODAL -->
+<div class="overlay" id="modal-company">
+<div class="modal">
+  <div class="modal-hdr">
+    <div class="modal-title">🏢 إضافة شركة / Добавить компанию</div>
+    <button class="modal-close" onclick="closeModal('modal-company')">✕</button>
+  </div>
+  <div class="fg"><label>اسم الشركة *</label><input id="company-name" placeholder="اسم الشركة"></div>
+  <div class="fg"><label>العنوان</label><input id="company-addr" placeholder="العنوان"></div>
+  <div class="fg"><label>الهاتف</label><input id="company-phone" placeholder="الهاتف"></div>
+  <div style="display:flex;gap:12px;margin-top:16px;">
+    <button class="btn btn-primary" style="flex:1" onclick="saveCompany()">💾 حفظ</button>
+    <button class="btn btn-outline" onclick="closeModal('modal-company')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<!-- COMPANY DOC MODAL -->
+<div class="overlay" id="modal-company-doc">
+<div class="modal">
+  <div class="modal-hdr">
+    <div class="modal-title">📄 مستند شركة / Документ компании</div>
+    <button class="modal-close" onclick="closeModal('modal-company-doc')">✕</button>
+  </div>
+  <div class="fg"><label>الشركة *</label>
+    <select id="cdoc-company">
+      <option value="">اختر الشركة</option>
+    </select>
+  </div>
+  <div class="fg-row c2">
+    <div class="fg"><label>الكمية *</label><input type="number" id="cdoc-qty" placeholder="1"></div>
+    <div class="fg"><label>السعر للوحدة ₽</label><input type="number" id="cdoc-price" placeholder="0"></div>
+  </div>
+  <div class="fg"><label>ملاحظات</label><textarea id="cdoc-notes" rows="3" placeholder="ملاحظات"></textarea></div>
+  <div style="display:flex;gap:12px;margin-top:16px;">
+    <button class="btn btn-primary" style="flex:1" onclick="saveCompanyDoc()">💾 حفظ</button>
+    <button class="btn btn-outline" onclick="closeModal('modal-company-doc')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<!-- STAFF MODAL -->
+<div class="overlay" id="modal-staff">
+<div class="modal">
+  <div class="modal-hdr">
+    <div class="modal-title">👤 إضافة موظف / Добавить сотрудника</div>
+    <button class="modal-close" onclick="closeModal('modal-staff')">✕</button>
+  </div>
+  <div class="fg"><label>اسم الموظف *</label><input id="staff-name" placeholder="اسم الموظف"></div>
+  <div class="fg"><label>الوظيفة *</label>
+    <select id="staff-role">
+      <option value="admin">مدير</option>
+      <option value="translator">مترجم</option>
+      <option value="reception">استقبال</option>
+    </select>
+  </div>
+  <div class="fg"><label>اللغات</label><input id="staff-langs" placeholder="مثال: عربي ↔ روسي"></div>
+  <div style="display:flex;gap:12px;margin-top:16px;">
+    <button class="btn btn-primary" style="flex:1" onclick="saveStaff()">💾 حفظ</button>
+    <button class="btn btn-outline" onclick="closeModal('modal-staff')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===================== DATABASE =====================
+const DEFAULT_SERVICES = [
+    {id:1,name:'ПАСПОРТ (РАЗВОРОТ С ФОТО) / ترجمة جواز سفر (صفحة)',cat:'ترجمة وثائق',price:700},
+    {id:2,name:'ПОЛНЫЙ ПАСПОРТ (ВСЕХ СТРАНИЦАХ) / الجواز كامل',cat:'ترجمة وثائق',price:1500},
+    {id:3,name:'СВИДЕТЕЛЬСТВА (О РОЖДЕНИИ, О БРАКЕ, О СМЕРТИ) / شهادات',cat:'ترجمة وثائق',price:900},
+    {id:4,name:'АТТЕСТАТ, ДИПЛОМ, СЕРТИФИКАТ / شهادة دراسية',cat:'ترجمة وثائق',price:1200},
+    {id:5,name:'НОТАРИАЛЬНОЕ ЗАВЕРЕНИЕ / تصديق نوتاريوس',cat:'نوتاريوس',price:800},
+    {id:6,name:'НОТАРИАЛЬНОЕ ЗАВЕРЕНИЕ КОПИИ / تصديق نسخة',cat:'نوتاريوس',price:600},
+    {id:7,name:'ПЕРЕВОД АТТЕСТАТА О СРЕДНЕМ ОБРАЗОВАНИИ / شهادة ثانوية',cat:'ترجمة وثائق',price:1400},
+    {id:8,name:'ПЕРЕВОД СЕРТИФИКАТА ВЫПУСКНИКА / شهادة تخرج تحضيري',cat:'ترجمة وثائق',price:1000},
+    {id:9,name:'ПЕРЕВОД СПРАВКИ О НЕСУДИМОСТИ / شهادة حسن سيرة',cat:'ترجمة وثائق',price:900},
+    {id:10,name:'ПЕРЕВОД ДИПЛОМА И ПРИЛОЖЕНИЕ (1997-2010)',cat:'ترجمة وثائق',price:2200},
+    {id:11,name:'ПЕРЕВОД ДИПЛОМА И ПРИЛОЖЕНИЕ (после 2010)',cat:'ترجمة وثائق',price:2500},
+    {id:12,name:'ПЕРЕВОД ДИПЛОМА И ПРИЛОЖЕНИЕ (после 2014)',cat:'ترجمة وثائق',price:2800},
+    {id:13,name:'ПЕРЕВОД ДИПЛОМА КАНДИДАТА НАУК / دكتوراه',cat:'ترجمة وثائق',price:3500},
+    {id:14,name:'ПЕРЕВОД ДИПЛОМА О ДОПОЛНИТЕЛЬНОМ / دبلوم إضافي',cat:'ترجمة وثائق',price:1800},
+    {id:15,name:'ПЕРЕВОД ДИПЛОМА О ПЕРЕКВАЛИФИКАЦИИ / إعادة تأهيل',cat:'ترجمة وثائق',price:2000},
+    {id:16,name:'ПРИЛОЖЕНИЕ К ДИПЛОМУ О ПЕРЕКВАЛИФИКАЦИИ / ملحق',cat:'ترجمة وثائق',price:1600},
+    {id:17,name:'ПЕРЕВОД ЗАЧЕТНОЙ КНИЖКИ / كشف درجات',cat:'ترجمة وثائق',price:3000},
+    {id:18,name:'ПЕРЕВОД СПРАВКИ СТУДЕНТА / إفادة طالب',cat:'ترجمة وثائق',price:700},
+    {id:19,name:'ПЕРЕВОД СПРАВКИ АСПИРАНТА / إفادة دراسات عليا',cat:'ترجمة وثائق',price:700},
+    {id:20,name:'ПОВТОРНОЕ ЗАВЕРЕНИЕ / تصديق مكرر',cat:'نوتاريوس',price:400},
+    {id:21,name:'تصديق وزارة العدل / Минюст',cat:'تصديق وزارات',price:1500},
+    {id:22,name:'تصديق وزارة الخارجية / МИД',cat:'تصديق وزارات',price:1200},
+    {id:23,name:'تصديق سفارة / Посольство',cat:'تصديق سفارات',price:2000},
+    {id:24,name:'إصدار الأبوستيل / Апостиль',cat:'أبوستيل',price:3000},
+];
+
+const DEFAULT_DB = {
+  orders: [], companies: [], companyDocs: [], expenses: [], services: [], staff: [
+    {id:1,name:'مصطفى',role:'admin',langs:'عربي ↔ روسي'},
+  ],
+  settings: { officeName:'ГЛАГОЛ', officeAddr:'موسكو، РУДН', officePhone:'', accentColor:'#3b82f6', theme:'light' },
+  notes: '',
+  passwords: { admin:'admin123', staff:'staff123' },
+  nextId: 100,
+  cloudSync: { enabled: false, endpoint: '', apiKey: '', lastSync: null }
+};
+
+let DB = JSON.parse(localStorage.getItem('glagol_pro_v6') || 'null') || JSON.parse(JSON.stringify(DEFAULT_DB));
+let currentRole = 'admin';
+
+function save() { localStorage.setItem('glagol_pro_v6', JSON.stringify(DB)); updateNavBadges(); }
+function n(x) { return Number(x)||0; }
+function fmt(x) { return n(x).toLocaleString('ru-RU') + ' ₽'; }
+function today() { return new Date().toISOString().split('T')[0]; }
+function tid() { return DB.nextId++; }
+
+// ===================== AUTH =====================
+let selectedRole = 'admin';
+function selectRole(r,el) {
+  selectedRole = r;
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+function doLogin() {
+  const pass = document.getElementById('loginPass').value;
+  const valid = (selectedRole==='admin' && pass===DB.passwords.admin) ||
+                (selectedRole==='reception' && pass===(DB.passwords.reception||'recep123')) ||
+                (selectedRole==='translator' && pass===DB.passwords.staff);
+  if(valid) {
+    currentRole = selectedRole;
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('app').classList.add('visible');
+    const roleLabels = {admin:'👑 مدير', reception:'🗂️ استقبال', translator:'👤 مترجم'};
+    document.getElementById('tbUser').textContent = roleLabels[currentRole]||currentRole;
+    applyPermissions();
+    updateDate();
+    renderDashboard();
+    updateNavBadges();
+    applyLang();
+    document.getElementById('dashNotes').value = DB.notes||'';
+    loadSettings();
+    applyTheme();
+    if(!DB.services||DB.services.length===0) { DB.services=[...DEFAULT_SERVICES]; save(); }
+  } else {
+    document.getElementById('loginError').style.display='block';
+    setTimeout(()=>document.getElementById('loginError').style.display='none',3000);
+  }
+}
+function doLogout() {
+  document.getElementById('loginPass').value='';
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('loginScreen').style.display='flex';
+}
+function applyPermissions() {
+  const isAdmin = currentRole==='admin';
+  ['nav-finance-group','nav-admin-group'].forEach(id => {
+    const el=document.getElementById(id);
+    if(el) el.style.display=isAdmin?'':'none';
+  });
+}
+
+// ===================== NAVIGATION =====================
+function nav(id, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  else document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('active');
+  });
+  if(id==='dashboard') renderDashboard();
+  if(id==='services') { populateServiceCats(); renderServices(); }
+  if(id==='orders') renderOrders();
+  if(id==='companies') renderCompanies();
+  if(id==='statements') renderStatements();
+  if(id==='finance') renderFinance();
+  if(id==='reports') { renderReport('daily'); }
+  if(id==='staff') renderStaff();
+  if(id==='settings') { loadSettings(); }
+  if(id==='control') renderControlPanel();
+}
+
+// ===================== MODALS =====================
+function openModal(id) {
+  if(id==='modal-service') { 
+    document.getElementById('sv-edit-id').value=''; 
+    document.getElementById('sv-name').value=''; 
+    document.getElementById('sv-price').value=''; 
+  }
+  if(id==='modal-order') { 
+    document.getElementById('order-edit-id').value=''; 
+    document.getElementById('order-client').value=''; 
+    document.getElementById('order-phone').value=''; 
+    document.getElementById('order-service').value=''; 
+    document.getElementById('order-price').value=''; 
+    document.getElementById('order-paid').value=''; 
+    document.getElementById('order-notes').value=''; 
+    populateOrderServices();
+  }
+  if(id==='modal-company') { 
+    document.getElementById('company-name').value=''; 
+    document.getElementById('company-addr').value=''; 
+    document.getElementById('company-phone').value=''; 
+  }
+  if(id==='modal-company-doc') { 
+    document.getElementById('cdoc-company').value=''; 
+    document.getElementById('cdoc-qty').value='1'; 
+    document.getElementById('cdoc-price').value=''; 
+    document.getElementById('cdoc-notes').value=''; 
+    populateCompanyDocCompanies();
+  }
+  if(id==='modal-staff') { 
+    document.getElementById('staff-name').value=''; 
+    document.getElementById('staff-role').value='translator'; 
+    document.getElementById('staff-langs').value=''; 
+  }
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) { 
+  document.getElementById(id).classList.remove('open'); 
+}
+
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{ 
+  if(e.target===o) o.classList.remove('open'); 
+}));
+
+// ===================== ORDER FUNCTIONS =====================
+function populateOrderServices() {
+  if(!DB.services||DB.services.length===0) DB.services=[...DEFAULT_SERVICES];
+  const sel=document.getElementById('order-service');
+  sel.innerHTML='<option value="">اختر الخدمة</option>'+DB.services.map(s=>`<option value="${s.id}" data-price="${s.price}">${s.name}</option>`).join('');
+}
+
+function updateOrderPrice() {
+  const sel=document.getElementById('order-service');
+  const priceInput=document.getElementById('order-price');
+  if(sel.value) {
+    const selectedOption=sel.options[sel.selectedIndex];
+    const price=selectedOption.getAttribute('data-price');
+    priceInput.value=price||0;
+  }
+}
+
+function saveOrder() {
+  const client=document.getElementById('order-client').value.trim();
+  const phone=document.getElementById('order-phone').value.trim();
+  const serviceId=document.getElementById('order-service').value;
+  const price=n(document.getElementById('order-price').value);
+  const paid=n(document.getElementById('order-paid').value);
+  const notes=document.getElementById('order-notes').value.trim();
+  
+  if(!client){showToast('⚠️ أدخل اسم العميل');return;}
+  if(!serviceId){showToast('⚠️ اختر الخدمة');return;}
+  
+  const service=DB.services.find(s=>s.id==serviceId);
+  const order={
+    id:tid(),
+    orderId:'TR-'+new Date().getFullYear()+'-'+String(DB.nextId).padStart(4,'0'),
+    date:today(),
+    client,
+    phone,
+    service:service.name,
+    price,
+    paid,
+    remaining:Math.max(0,price-paid),
+    notes,
+    status:paid>=price?'done':'active',
+    workflow:'new'
+  };
+  
+  DB.orders.push(order);
+  save();
+  closeModal('modal-order');
+  renderOrders();
+  renderDashboard();
+  showToast('✅ تم إضافة الطلب');
+}
+
+// ===================== COMPANY FUNCTIONS =====================
+function saveCompany() {
+  const name=document.getElementById('company-name').value.trim();
+  const addr=document.getElementById('company-addr').value.trim();
+  const phone=document.getElementById('company-phone').value.trim();
+  
+  if(!name){showToast('⚠️ أدخل اسم الشركة');return;}
+  
+  const company={id:tid(),name,addr,phone};
+  DB.companies.push(company);
+  save();
+  closeModal('modal-company');
+  renderCompanies();
+  showToast('✅ تم إضافة الشركة');
+}
+
+// ===================== COMPANY DOC FUNCTIONS =====================
+function populateCompanyDocCompanies() {
+  const sel=document.getElementById('cdoc-company');
+  sel.innerHTML='<option value="">اختر الشركة</option>'+DB.companies.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+}
+
+function saveCompanyDoc() {
+  const companyId=document.getElementById('cdoc-company').value;
+  const qty=n(document.getElementById('cdoc-qty').value);
+  const price=n(document.getElementById('cdoc-price').value);
+  const notes=document.getElementById('cdoc-notes').value.trim();
+  
+  if(!companyId){showToast('⚠️ اختر الشركة');return;}
+  if(!qty||qty<1){showToast('⚠️ أدخل كمية صحيحة');return;}
+  
+  const company=DB.companies.find(c=>c.id==companyId);
+  const total=qty*price;
+  
+  const doc={
+    id:tid(),
+    companyId,
+    companyName:company.name,
+    date:today(),
+    qty,
+    unitPrice:price,
+    total,
+    paid:0,
+    notes,
+    status:'unpaid'
+  };
+  
+  DB.companyDocs.push(doc);
+  save();
+  closeModal('modal-company-doc');
+  showToast('✅ تم إضافة المستند');
+}
+
+// ===================== STAFF FUNCTIONS =====================
+function saveStaff() {
+  const name=document.getElementById('staff-name').value.trim();
+  const role=document.getElementById('staff-role').value;
+  const langs=document.getElementById('staff-langs').value.trim();
+  
+  if(!name){showToast('⚠️ أدخل اسم الموظف');return;}
+  
+  const staff={id:tid(),name,role,langs};
+  DB.staff.push(staff);
+  save();
+  closeModal('modal-staff');
+  renderStaff();
+  showToast('✅ تم إضافة الموظف');
+}
+
+// ===================== SERVICES (Enhanced with Drag & Drop) =====================
+let draggedService = null;
+
+function saveService() {
+  const name=document.getElementById('sv-name').value.trim();
+  if(!name){showToast('⚠️ أدخل اسم الخدمة');return;}
+  if(!DB.services||DB.services.length===0) DB.services=[...DEFAULT_SERVICES];
+  const editId=document.getElementById('sv-edit-id').value;
+  const sv={id:editId?+editId:tid(),name,cat:document.getElementById('sv-cat').value,price:n(document.getElementById('sv-price').value)||0};
+  if(editId){const i=DB.services.findIndex(s=>s.id===+editId);if(i>=0)DB.services[i]=sv;}
+  else DB.services.push(sv);
+  save(); closeModal('modal-service'); renderServices();
+  showToast('✅ تمت إضافة الخدمة');
+}
+function editService(id) {
+  if(!DB.services)DB.services=[...DEFAULT_SERVICES];
+  const sv=DB.services.find(s=>s.id===id); if(!sv)return;
+  document.getElementById('sv-edit-id').value=sv.id;
+  document.getElementById('sv-name').value=sv.name;
+  document.getElementById('sv-cat').value=sv.cat;
+  document.getElementById('sv-price').value=sv.price;
+  openModal('modal-service');
+}
+function deleteService(id) {
+  if(!confirm('حذف هذه الخدمة؟'))return;
+  DB.services=DB.services.filter(s=>s.id!==id);
+  save(); renderServices();
+  showToast('تم الحذف');
+}
+function populateServiceCats() {
+  if(!DB.services||DB.services.length===0) DB.services=[...DEFAULT_SERVICES];
+  const cats=[...new Set(DB.services.map(s=>s.cat))];
+  const sel=document.getElementById('srv-cat-f');
+  const val=sel.value;
+  sel.innerHTML='<option value="">كل الفئات / Все</option>'+cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+  if(val) sel.value=val;
+}
+function renderServices() {
+  if(!DB.services||DB.services.length===0) DB.services=[...DEFAULT_SERVICES];
+  const search=(document.getElementById('srv-search')?.value||'').toLowerCase();
+  const catF=document.getElementById('srv-cat-f')?.value||'';
+  let svs=DB.services;
+  if(search) svs=svs.filter(s=>s.name.toLowerCase().includes(search));
+  if(catF) svs=svs.filter(s=>s.cat===catF);
+  const cats=[...new Set(svs.map(s=>s.cat))];
+  let html='';
+  cats.forEach(cat=>{
+    const catSvs=svs.filter(s=>s.cat===cat);
+    html+=`<div style="grid-column:1/-1;padding:12px 0 6px;font-size:12px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);margin-bottom:6px;">${cat}</div>`;
+    html+=catSvs.map(s=>`
+      <div class="draggable service-card" draggable="true" data-service-id="${s.id}" style="background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:center;justify-content:space-between;transition:all 0.3s;cursor:move;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'" ondragstart="handleDragStart(event,${s.id})" ondragover="handleDragOver(event)" ondrop="handleDrop(event,${s.id})" ondragend="handleDragEnd(event)">
+        <div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:4px;">${s.name}</div>
+          <div style="font-size:11px;color:var(--ink3);">${s.cat}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="font-size:20px;font-weight:800;color:var(--accent);">${s.price.toLocaleString()} ₽</div>
+          <button class="btn btn-outline btn-xs" onclick="editService(${s.id})">✏️</button>
+          <button class="btn btn-red btn-xs" onclick="deleteService(${s.id})">✕</button>
+        </div>
+      </div>`).join('');
+  });
+  document.getElementById('services-grid').innerHTML=html||'<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--ink3);">لا توجد خدمات</div>';
+  
+  // Add drag and drop event listeners
+  document.querySelectorAll('.draggable').forEach(elem => {
+    elem.addEventListener('dragstart', handleDragStart);
+    elem.addEventListener('dragover', handleDragOver);
+    elem.addEventListener('drop', handleDrop);
+    elem.addEventListener('dragend', handleDragEnd);
+  });
+}
+
+// Drag and Drop Functions
+function handleDragStart(e, serviceId) {
+  draggedService = serviceId;
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+  if (e.preventDefault) {
+    e.preventDefault();
+  }
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drop-zone');
+  return false;
+}
+
+function handleDrop(e, targetServiceId) {
+  if (e.stopPropagation) {
+    e.stopPropagation();
+  }
+  
+  if (draggedService && draggedService !== targetServiceId) {
+    // Swap services in the array
+    const draggedIndex = DB.services.findIndex(s => s.id === draggedService);
+    const targetIndex = DB.services.findIndex(s => s.id === targetServiceId);
+    
+    if (draggedIndex !== -1 && targetIndex !== -1) {
+      const temp = DB.services[draggedIndex];
+      DB.services[draggedIndex] = DB.services[targetIndex];
+      DB.services[targetIndex] = temp;
+      save();
+      renderServices();
+      showToast('✅ تم تغيير ترتيب الخدمة');
+    }
+  }
+  
+  return false;
+}
+
+function handleDragEnd(e) {
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.drop-zone').forEach(elem => {
+    elem.classList.remove('drop-zone');
+  });
+  draggedService = null;
+}
+
+// ===================== SYSTEM CONTROL =====================
+function executeSystemCommand(customCommand) {
+  const command = customCommand || document.getElementById('customCommand').value;
+  if (!command) {
+    showToast('⚠️ أدخل أمراً للتنفيذ');
+    return;
+  }
+  
+  const output = document.getElementById('commandOutput');
+  output.innerHTML = '🔄 جاري تنفيذ الأمر: ' + command + '\n\n';
+  
+  // Simulate system command execution
+  setTimeout(() => {
+    let result = '';
+    switch(command) {
+      case 'systeminfo':
+        result = `معلومات النظام:
+نظام التشغيل: Windows 10 Pro
+المعالج: Intel Core i7-10700K @ 3.80GHz
+الذاكرة: 16GB DDR4
+القرص: 512GB SSD
+تاريخ التثبيت: 15/01/2023`;
+        break;
+      case 'tasklist':
+        result = `قائمة العمليات النشطة:
+chrome.exe (PID: 1234) - 450MB
+code.exe (PID: 5678) - 200MB
+explorer.exe (PID: 9012) - 80MB
+node.exe (PID: 3456) - 150MB`;
+        break;
+      case 'netstat -an':
+        result = `منافذ الشبكة المفتوحة:
+TCP 0.0.0.0:80 : 0.0.0.0:0 : LISTENING
+TCP 0.0.0.0:443 : 0.0.0.0:0 : LISTENING
+TCP 127.0.0.1:3000 : 0.0.0.0:0 : LISTENING`;
+        break;
+      case 'dir':
+        result = `ملفات المجلد الحالي:
+11/01/2024  09:15 AM    <DIR>          documents
+11/01/2024  10:30 AM    <DIR>          downloads
+12/01/2024  02:45 PM         1,234,567 backup.zip
+12/01/2024  03:20 PM           45,678 notes.txt`;
+        break;
+      case 'ipconfig /all':
+        result = `معلومات الشبكة:
+Ethernet adapter:
+  IP Address: 192.168.1.100
+  Subnet Mask: 255.255.255.0
+  Default Gateway: 192.168.1.1
+  DNS Servers: 192.168.1.1, 8.8.8.8`;
+        break;
+      case 'wmic logicaldisk get size,freespace,caption':
+        result = `مساحات القرص:
+C:  500,000,000,000  250,000,000,000
+D:  1,000,000,000,000  750,000,000,000`;
+        break;
+      default:
+        result = `تم تنفيذ الأمر: ${command}
+النتائج محاكاة للتوضيح فقط.
+في النظام الحقيقي، سيتم تنفيذ الأمر الفعلي.`;
+    }
+    
+    output.innerHTML += result;
+    output.scrollTop = output.scrollHeight;
+    showToast('✅ تم تنفيذ الأمر بنجاح');
+  }, 1000);
+}
+
+// ===================== HELPER FUNCTIONS =====================
+function n(x) { return Number(x) || 0; }
+function fmt(x) { return n(x).toLocaleString('ru-RU') + ' ₽'; }
+function today() { return new Date().toISOString().split('T')[0]; }
+function tid() { return ++DB.nextId; }
+
+// ===================== MISSING RENDER FUNCTIONS =====================
+function renderOrders() {
+  const orders = DB.orders.slice(-10).reverse();
+  const container = document.getElementById('orders-container');
+  if(container) {
+    container.innerHTML = orders.map(o => `
+      <div class="order-item" style="padding:16px;background:var(--surface2);border-radius:12px;margin-bottom:12px;">
+        <div style="font-weight:600;color:var(--accent);">${o.orderId || 'TR-' + o.id}</div>
+        <div style="font-size:14px;margin-top:4px;">${o.client}</div>
+        <div style="font-size:12px;color:var(--ink3);margin-top:2px;">${o.service}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+          <span style="font-family:'IBM Plex Mono',monospace;font-weight:600;">${fmt(o.price)}</span>
+          <span class="badge badge-${o.status === 'done' ? 'done' : 'active'}">${o.status === 'done' ? 'مكتمل' : 'جاري'}</span>
+        </div>
+      </div>
+    `).join('') || '<div style="text-align:center;padding:40px;color:var(--ink3);">لا توجد طلبات</div>';
+  }
+}
+
+function renderCompanies() {
+  const container = document.getElementById('companies-container');
+  if(container) {
+    container.innerHTML = DB.companies.map(co => `
+      <div class="company-item" style="padding:16px;background:var(--surface2);border-radius:12px;margin-bottom:12px;">
+        <div style="font-weight:600;color:var(--accent);">${co.name}</div>
+        <div style="font-size:14px;color:var(--ink3);margin-top:4px;">${co.address || ''}</div>
+        <div style="font-size:12px;color:var(--ink3);margin-top:2px;">${co.phone || ''}</div>
+      </div>
+    `).join('') || '<div style="text-align:center;padding:40px;color:var(--ink3);">لا توجد شركات</div>';
+  }
+}
+
+function renderStatements() {
+  const container = document.getElementById('statements-container');
+  if(container) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--ink3);">صفحة الكشوفات قيد التطوير</div>';
+  }
+}
+
+function renderFinance() {
+  const income = DB.orders.reduce((s,o)=>s+n(o.paid),0) + DB.companyDocs.reduce((s,d)=>s+n(d.paid),0);
+  const pending = DB.orders.reduce((s,o)=>s+n(o.remaining),0) + DB.companyDocs.reduce((s,d)=>s+Math.max(0,n(d.total)-n(d.paid)),0);
+  const expenses = DB.expenses.reduce((s,e)=>s+n(e.amount),0);
+  const profit = income - expenses;
+  
+  const container = document.getElementById('finance-container');
+  if(container) {
+    container.innerHTML = `
+      <div class="kpi-row cols4" style="margin-bottom:24px;">
+        <div class="kcard green"><div class="kcard-icon">💵</div><div class="kcard-val green">${fmt(income)}</div><div class="kcard-lbl">إجمالي المحصّل</div></div>
+        <div class="kcard red"><div class="kcard-icon">⏳</div><div class="kcard-val red">${fmt(pending)}</div><div class="kcard-lbl">ديون لم تُحصّل</div></div>
+        <div class="kcard"><div class="kcard-icon">📤</div><div class="kcard-val">${fmt(expenses)}</div><div class="kcard-lbl">المصروفات</div></div>
+        <div class="kcard gold"><div class="kcard-icon">📈</div><div class="kcard-val gold">${fmt(profit)}</div><div class="kcard-lbl">صافي الربح</div></div>
+      </div>
+      <div style="text-align:center;padding:40px;color:var(--ink3);">تفاصيل المحاسبة قيد التطوير</div>
+    `;
+  }
+}
+
+function renderReport(type) {
+  const container = document.getElementById('reports-container');
+  if(container) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--ink3);">صفحة التقارير قيد التطوير</div>';
+  }
+}
+
+function renderStaff() {
+  const container = document.getElementById('staff-container');
+  if(container) {
+    container.innerHTML = DB.staff.map(s => `
+      <div class="staff-item" style="padding:16px;background:var(--surface2);border-radius:12px;margin-bottom:12px;">
+        <div style="font-weight:600;color:var(--accent);">${s.name}</div>
+        <div style="font-size:14px;color:var(--ink3);margin-top:4px;">${s.role}</div>
+        <div style="font-size:12px;color:var(--ink3);margin-top:2px;">${s.langs || ''}</div>
+      </div>
+    `).join('') || '<div style="text-align:center;padding:40px;color:var(--ink3);">لا يوجد موظفين</div>';
+  }
+}
+
+function renderControlPanel() {
+  const container = document.getElementById('control-container');
+  if(container) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--ink3);">لوحة التحكم جاهزة للاستخدام</div>';
+  }
+}
+
+// ===================== DASHBOARD =====================
+function renderDashboard() {
+  const todayStr = today();
+  const now = new Date();
+
+  // --- TODAY STATS ---
+  const todayOrders = DB.orders.filter(o=>o.date===todayStr);
+  const todayIncome = todayOrders.reduce((s,o)=>s+n(o.paid),0) + DB.companyDocs.filter(d=>d.date===todayStr).reduce((s,d)=>s+n(d.paid),0);
+  const newToday = todayOrders.filter(o=>(o.workflow||'new')==='new').length;
+  const inProgress = DB.orders.filter(o=>['translate','review','notary'].includes(o.workflow||'')).length;
+  const readyToday = DB.orders.filter(o=>(o.workflow||'')==='ready').length;
+
+  document.getElementById('dash-today').innerHTML = `
+    <div class="today-card tc-blue" onclick="nav('orders',null)">
+      <div class="today-num">${todayOrders.length}</div><div class="today-lbl">طلبات اليوم</div>
+    </div>
+    <div class="today-card tc-green">
+      <div class="today-num" style="font-size:24px;">${fmt(todayIncome)}</div><div class="today-lbl">إيرادات اليوم</div>
+    </div>
+    <div class="today-card tc-orange" onclick="nav('orders',null)">
+      <div class="today-num">${inProgress}</div><div class="today-lbl">قيد التنفيذ</div>
+    </div>
+    <div class="today-card tc-purple" onclick="nav('orders',null)">
+      <div class="today-num">${readyToday}</div><div class="today-lbl">جاهز للتسليم</div>
+    </div>
+    <div class="today-card tc-red">
+      <div class="today-num">${DB.services?.length || 0}</div><div class="today-lbl">الخدمات المتاحة</div>
+    </div>
+  `;
+
+  // --- PROFIT METER ---
+  const totalIncome=DB.orders.reduce((s,o)=>s+n(o.paid),0)+DB.companyDocs.reduce((s,d)=>s+n(d.paid),0);
+  const totalExpenses=DB.expenses.reduce((s,e)=>s+n(e.amount),0);
+  const totalNetProfit = DB.orders.reduce((s,o)=>s+n(o.netProfit||0),0);
+  const totalDebt=DB.orders.reduce((s,o)=>s+n(o.remaining),0)+DB.companyDocs.reduce((s,d)=>s+Math.max(0,n(d.total)-n(d.paid)),0);
+
+  document.getElementById('dash-profit-meter').innerHTML = `
+    <div class="profit-meter">
+      <div class="pm-title">إجمالي الأرباح</div>
+      <div class="pm-val">${fmt(totalNetProfit)}</div>
+      <div class="pm-sub">صافي ربح الطلبات</div>
+      <div class="pm-grid">
+        <div class="pm-item green"><div class="pm-item-val">${fmt(totalIncome)}</div><div class="pm-item-lbl">المحصّل</div></div>
+        <div class="pm-item red"><div class="pm-item-val">${fmt(totalExpenses)}</div><div class="pm-item-lbl">المصروفات</div></div>
+        <div class="pm-item gold"><div class="pm-item-val">${fmt(totalDebt)}</div><div class="pm-item-lbl">الديون</div></div>
+      </div>
+    </div>
+  `;
+
+  // --- KPI ---
+  document.getElementById('dash-kpis').innerHTML=`
+    <div class="kcard"><div class="kcard-icon">📋</div><div class="kcard-val accent">${DB.orders.length}</div><div class="kcard-lbl">إجمالي الطلبات</div></div>
+    <div class="kcard green"><div class="kcard-icon">💵</div><div class="kcard-val green">${fmt(totalIncome)}</div><div class="kcard-lbl">المحصّل</div></div>
+    <div class="kcard red"><div class="kcard-icon">⚠️</div><div class="kcard-val red">${fmt(totalDebt)}</div><div class="kcard-lbl">ديون</div></div>
+    <div class="kcard gold"><div class="kcard-icon">📈</div><div class="kcard-val gold">${DB.services?.length || 0}</div><div class="kcard-lbl">الخدمات</div></div>
+  `;
+
+  // --- RECENT ORDERS ---
+  const recent=[...DB.orders].reverse().slice(0,5);
+  document.getElementById('dash-recent').innerHTML=`<table class="tbl"><tbody>${
+    recent.map(o=>`<tr>
+      <td><span class="order-id-badge">#${o.id}</span></td>
+      <td style="font-weight:600;">${o.client}</td>
+      <td style="font-size:12px;color:var(--ink3);">${o.service.slice(0,30)}${o.service.length>30?'…':''}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-weight:700;">${fmt(o.price)}</td>
+      <td><span class="badge badge-active">جديد</span></td>
+    </tr>`).join('')
+    ||'<tr><td colspan="5" class="tbl-empty">لا توجد طلبات</td></tr>'
+  }</tbody></table>`;
+}
+
+// ===================== NAV BADGES =====================
+function updateNavBadges() {
+  const pending=DB.orders.filter(o=>o.status==='new'||o.status==='active').length;
+  const nbOrdersEl = document.getElementById('nb-orders');
+  if(nbOrdersEl) nbOrdersEl.textContent=pending||'';
+  
+  const debts=DB.companies.filter(co=>getCompanyStats(co.id).totalDebt>0).length;
+  const nbDebtsEl = document.getElementById('nb-debts');
+  if(nbDebtsEl) nbDebtsEl.textContent=debts||'';
+}
+
+function getCompanyStats(coId) {
+  const docs=DB.companyDocs.filter(d=>d.companyId===coId);
+  return {
+    totalDocs:docs.reduce((s,d)=>s+n(d.qty),0),
+    totalAmount:docs.reduce((s,d)=>s+n(d.total),0),
+    totalPaid:docs.reduce((s,d)=>s+n(d.paid),0),
+    totalDebt:docs.reduce((s,d)=>s+Math.max(0,n(d.total)-n(d.paid)),0),
+  };
+}
+
+// ===================== SETTINGS =====================
+const COLORS=['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6','#6366f1'];
+function loadSettings() {
+  const officeNameEl = document.getElementById('s-office-name');
+  const officeAddrEl = document.getElementById('s-office-addr');
+  const officePhoneEl = document.getElementById('s-office-phone');
+  const colorPaletteEl = document.getElementById('colorPalette');
+  
+  if(officeNameEl) officeNameEl.value=DB.settings.officeName||'ГЛАГОЛ';
+  if(officeAddrEl) officeAddrEl.value=DB.settings.officeAddr||'';
+  if(officePhoneEl) officePhoneEl.value=DB.settings.officePhone||'';
+  if(colorPaletteEl) {
+    colorPaletteEl.innerHTML=COLORS.map(c=>`<div class="color-btn ${c===DB.settings.accentColor?'active':''}" style="background:${c}" onclick="setAccentColor('${c}',this)"></div>`).join('');
+  }
+}
+function setAccentColor(c,el) {
+  DB.settings.accentColor=c; save();
+  document.documentElement.style.setProperty('--accent',c);
+  if(el) {
+    document.querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active'));
+    el.classList.add('active');
+  }
+  showToast('✅ تم تغيير اللون');
+}
+function setTheme(t) { DB.settings.theme=t; save(); applyTheme(); }
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme',DB.settings.theme||'light');
+  if(DB.settings.accentColor) document.documentElement.style.setProperty('--accent',DB.settings.accentColor);
+}
+function toggleTheme() { setTheme(DB.settings.theme==='dark'?'light':'dark'); }
+
+// ===================== TOAST =====================
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  if(t) {
+    t.textContent=msg; 
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3000);
+  } else {
+    console.log('Toast:', msg);
+  }
+}
+
+// ===================== LANGUAGE =====================
+let currentLang = 'ar';
+const TRANSLATIONS = {
+  ar: { navMain: 'الرئيسية', navDashboard: 'لوحة التحكم', navOrders: 'طلبات العملاء' },
+  ru: { navMain: 'ГЛАВНАЯ', navDashboard: 'Главная панель', navOrders: 'Заказы клиентов' }
+};
+function t(key) { return TRANSLATIONS[currentLang][key] || key; }
+function applyLang() {
+  const isRu = currentLang === 'ru';
+  const dir = isRu ? 'ltr' : 'rtl';
+  const lang = isRu ? 'ru' : 'ar';
+  document.documentElement.setAttribute('lang', lang);
+  document.documentElement.setAttribute('dir', dir);
+  safeText('nav-label-main', t('navMain'));
+  safeText('nav-item-dashboard', t('navDashboard'));
+  const langBtn = document.getElementById('lang-btn');
+  if(langBtn) {
+    langBtn.textContent = isRu ? 'RU' : 'AR';
+  }
+}
+function safeText(id, text) {
+  const el = document.getElementById(id);
+  if(el) el.textContent = text;
+}
+function toggleLang() {
+  currentLang = currentLang==='ar' ? 'ru' : 'ar';
+  applyLang();
+  showToast(currentLang==='ar' ? '🇸🇦 تم التحويل للعربية' : '🇷🇺 Переключено на русский');
+}
+function updateDate() {
+  const days = currentLang === 'ar' ? ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'] : ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  const months = currentLang === 'ar' ? ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'] : ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  const d=new Date();
+  const tbDateEl = document.getElementById('tbDate');
+  if(tbDateEl) {
+    tbDateEl.textContent=days[d.getDay()]+' '+d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();
+  }
+}
+
+// Initialize
+updateDate();
+</script>
+</body>
+</html>

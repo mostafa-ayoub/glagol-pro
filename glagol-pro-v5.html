@@ -1,0 +1,2720 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ГЛАГОЛ PRO — نظام إدارة المكتب</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Playfair+Display:wght@600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Force visibility */
+#app { 
+  display: flex !important; 
+  flex-direction: column !important; 
+  height: 100vh !important; 
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#login { 
+  display: none !important; 
+  visibility: hidden !important;
+}
+
+/* ===== ROOT ===== */
+:root {
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --surface2: #f7f8fa;
+  --surface3: #eef0f4;
+  --border: #e2e6ed;
+  --border2: #c8cdd8;
+  --ink: #0f1624;
+  --ink2: #3d4a5c;
+  --ink3: #7a8699;
+  --accent: #1e40af;
+  --accent2: #2563eb;
+  --accent-light: rgba(30,64,175,0.08);
+  --gold: #d97706;
+  --gold2: #f59e0b;
+  --gold-light: rgba(217,119,6,0.1);
+  --red: #dc2626;
+  --red-light: rgba(220,38,38,0.08);
+  --green: #16a34a;
+  --green-light: rgba(22,163,74,0.08);
+  --orange: #ea580c;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 8px rgba(15,22,36,0.07), 0 0 0 1px rgba(15,22,36,0.04);
+  --shadow-lg: 0 8px 40px rgba(15,22,36,0.12), 0 0 0 1px rgba(15,22,36,0.05);
+  --sidebar-w: 230px;
+  --topbar-h: 58px;
+}
+[data-theme="dark"] {
+  --bg: #0a0d14;
+  --surface: #111520;
+  --surface2: #171c2c;
+  --surface3: #1e2438;
+  --border: #252d42;
+  --border2: #323d5a;
+  --ink: #e4e9f4;
+  --ink2: #8e9ab0;
+  --ink3: #55637a;
+  --accent: #3b82f6;
+  --accent2: #60a5fa;
+  --accent-light: rgba(59,130,246,0.12);
+  --gold: #f59e0b;
+  --gold2: #fbbf24;
+  --gold-light: rgba(245,158,11,0.12);
+  --red: #ef4444;
+  --red-light: rgba(239,68,68,0.12);
+  --green: #22c55e;
+  --green-light: rgba(34,197,94,0.12);
+  --shadow: 0 1px 8px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.04);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.04);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Tajawal',sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; transition:background 0.3s, color 0.3s; }
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:4px; }
+
+/* ===== LOGIN SCREEN ===== */
+#loginScreen {
+  position:fixed; inset:0; z-index:9999;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column;
+}
+#loginScreen::before {
+  content:'';
+  position:fixed; inset:0;
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(30,64,175,0.12) 0%, transparent 70%),
+              radial-gradient(ellipse 50% 40% at 90% 90%, rgba(59,130,246,0.06) 0%, transparent 60%);
+  pointer-events:none;
+}
+.login-box {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:44px 52px;
+  width:420px;
+  box-shadow: 0 20px 60px rgba(15,22,36,0.1), 0 0 0 1px rgba(15,22,36,0.05);
+  text-align:center;
+  position:relative;
+  animation: loginReveal 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+@keyframes loginReveal {
+  from { opacity:0; transform:translateY(20px) scale(0.98); }
+  to { opacity:1; transform:translateY(0) scale(1); }
+}
+.login-logo {
+  font-family:'Playfair Display',serif;
+  font-size:46px; font-weight:800;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+  letter-spacing:6px;
+  margin-bottom:6px;
+  display:block;
+}
+.login-sub { font-size:13px; color:var(--ink3); margin-bottom:32px; line-height:1.7; }
+.login-field { 
+  margin-bottom:16px; text-align:right;
+}
+.login-field label { font-size:11px; color:var(--ink3); margin-bottom:6px; display:block; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
+.login-field input {
+  width:100%; padding:12px 16px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--surface2);
+  color:var(--ink); font-family:'Tajawal',sans-serif; font-size:14px;
+  outline:none; transition:all 0.2s;
+  text-align:right;
+}
+.login-field input:focus { border-color:var(--accent); background:var(--surface); box-shadow:0 0 0 3px var(--accent-light); }
+.login-btn {
+  width:100%; padding:13px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  color:white;
+  border:none; border-radius:10px;
+  font-family:'Tajawal',sans-serif; font-size:15px; font-weight:700;
+  cursor:pointer; margin-top:8px;
+  transition:all 0.2s;
+  box-shadow: 0 4px 14px rgba(30,64,175,0.35);
+  letter-spacing:0.3px;
+}
+.login-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(30,64,175,0.4); }
+.login-btn:active { transform:translateY(0); }
+.login-error { color:var(--red); font-size:12px; margin-top:10px; display:none; background:var(--red-light); padding:8px 12px; border-radius:8px; }
+.login-role-hint { font-size:11px; color:var(--ink3); margin-top:14px; background:var(--surface2); padding:8px 12px; border-radius:8px; font-family:'IBM Plex Mono',monospace; }
+.role-select { display:flex; gap:8px; margin-bottom:20px; }
+.role-btn {
+  flex:1; padding:10px; border:1px solid var(--border);
+  border-radius:10px; background:var(--surface2);
+  cursor:pointer; font-family:'Tajawal',sans-serif; font-size:13px;
+  color:var(--ink3); transition:all 0.2s; font-weight:600;
+}
+.role-btn.active { background:var(--accent-light); border-color:var(--accent); color:var(--accent); font-weight:700; box-shadow:0 0 0 2px rgba(30,64,175,0.15); }
+
+/* ===== LAYOUT ===== */
+#app { display:none; }
+#app.visible { display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+.topbar {
+  height:var(--topbar-h); background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 22px; flex-shrink:0; z-index:100;
+  box-shadow: 0 1px 0 var(--border);
+}
+.topbar-left { display:flex; align-items:center; gap:14px; }
+.app-logo { 
+  font-family:'Playfair Display',serif; font-size:22px; font-weight:800; 
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  letter-spacing:4px; 
+}
+.app-logo span { 
+  font-size:10px; color:var(--ink3); font-family:'IBM Plex Mono',monospace; 
+  font-weight:600; letter-spacing:1px; margin-right:10px;
+  -webkit-text-fill-color:var(--ink3); background:none;
+  background-clip:unset;
+  border:1px solid var(--border); padding:2px 7px; border-radius:4px;
+}
+.topbar-right { display:flex; align-items:center; gap:8px; }
+.tb-date { font-size:12px; color:var(--ink3); padding:5px 12px; border:1px solid var(--border); border-radius:20px; background:var(--surface2); font-family:'IBM Plex Mono',monospace; }
+.tb-user { font-size:12px; font-weight:700; padding:5px 14px; background:var(--accent-light); border-radius:20px; color:var(--accent); border:1px solid rgba(30,64,175,0.15); }
+.tb-btn {
+  width:34px; height:34px; border:1px solid var(--border); border-radius:9px;
+  background:none; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  font-size:15px; color:var(--ink3); transition:all 0.2s;
+}
+.tb-btn:hover { background:var(--surface2); color:var(--ink); border-color:var(--border2); }
+
+.body-wrap { display:flex; flex:1; overflow:hidden; }
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width:var(--sidebar-w); background:var(--surface);
+  border-left:1px solid var(--border);
+  overflow-y:auto; flex-shrink:0;
+  padding:14px 0;
+}
+.nav-group { margin-bottom:6px; }
+.nav-label { font-size:9px; color:var(--ink3); padding:10px 18px 4px; letter-spacing:2px; font-weight:700; text-transform:uppercase; font-family:'IBM Plex Mono',monospace; }
+.nav-item {
+  display:flex; align-items:center; gap:10px;
+  padding:9px 18px; cursor:pointer;
+  border-right:3px solid transparent;
+  font-size:13px; color:var(--ink2); font-weight:500;
+  transition:all 0.15s; position:relative; margin:1px 8px; border-radius:10px;
+}
+.nav-item:hover { background:var(--surface2); color:var(--ink); margin:1px 8px; }
+.nav-item.active { background:var(--accent-light); color:var(--accent); border-right-color:transparent; font-weight:700; box-shadow:0 0 0 1px rgba(30,64,175,0.12); }
+.nav-item .ni { font-size:15px; width:20px; text-align:center; }
+.nav-badge { margin-right:auto; background:var(--accent); color:white; font-size:10px; font-weight:700; padding:1px 7px; border-radius:10px; font-family:'IBM Plex Mono',monospace; }
+.nav-badge.red { background:var(--red); }
+
+/* ===== MAIN ===== */
+.main { flex:1; overflow-y:auto; padding:22px 26px; background:var(--bg); }
+.page { display:none; animation:fadeIn 0.22s ease; }
+.page.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ===== COMPONENTS ===== */
+.ph { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+.ph-title { font-size:22px; font-weight:800; color:var(--ink); }
+.ph-title span { color:var(--accent); }
+.ph-actions { display:flex; gap:8px; }
+
+.btn {
+  padding:9px 18px; border:none; cursor:pointer;
+  border-radius:9px; font-family:'Tajawal',sans-serif; font-size:13px; font-weight:700;
+  display:inline-flex; align-items:center; gap:6px;
+  transition:all 0.18s;
+  letter-spacing:0.1px;
+}
+.btn:active { transform:scale(0.97); }
+.btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:white; box-shadow:0 2px 8px rgba(30,64,175,0.3); }
+.btn-primary:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(30,64,175,0.4); }
+.btn-outline { background:none; border:1px solid var(--border2); color:var(--ink2); }
+.btn-outline:hover { background:var(--surface2); color:var(--ink); border-color:var(--border2); }
+.btn-gold { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:white; box-shadow:0 2px 8px rgba(217,119,6,0.25); }
+.btn-gold:hover { transform:translateY(-1px); }
+.btn-red { background:var(--red-light); color:var(--red); border:1px solid rgba(220,38,38,0.15); }
+.btn-green { background:var(--green-light); color:var(--green); border:1px solid rgba(22,163,74,0.15); }
+.btn-sm { padding:6px 12px; font-size:12px; border-radius:7px; }
+.btn-xs { padding:4px 9px; font-size:11px; border-radius:6px; }
+.btn-icon { width:34px; height:34px; padding:0; display:flex; align-items:center; justify-content:center; font-size:14px; }
+
+/* CARDS */
+.kpi-row { display:grid; gap:14px; margin-bottom:20px; }
+.kpi-row.cols4 { grid-template-columns:repeat(4,1fr); }
+.kpi-row.cols3 { grid-template-columns:repeat(3,1fr); }
+.kpi-row.cols2 { grid-template-columns:repeat(2,1fr); }
+.kcard {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:20px;
+  position:relative; overflow:hidden;
+  transition:transform 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow);
+}
+.kcard:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+.kcard::before { 
+  content:''; position:absolute; 
+  top:0; right:0; width:80px; height:80px;
+  background:var(--accent-light);
+  border-radius:50%;
+  transform:translate(20px,-30px);
+}
+.kcard.gold::before { background:var(--gold-light); }
+.kcard.green::before { background:var(--green-light); }
+.kcard.red::before { background:var(--red-light); }
+.kcard::after { content:''; position:absolute; top:0; right:0; left:0; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:var(--radius) var(--radius) 0 0; }
+.kcard.gold::after { background:linear-gradient(90deg,var(--gold),var(--gold2)); }
+.kcard.green::after { background:linear-gradient(90deg,var(--green),#4ade80); }
+.kcard.red::after { background:linear-gradient(90deg,var(--red),#f87171); }
+.kcard-icon { font-size:26px; margin-bottom:12px; position:relative; }
+.kcard-val { font-size:28px; font-weight:800; color:var(--ink); margin-bottom:4px; font-family:'IBM Plex Mono',monospace; position:relative; }
+.kcard-val.accent { color:var(--accent); }
+.kcard-val.gold { color:var(--gold); }
+.kcard-val.green { color:var(--green); }
+.kcard-val.red { color:var(--red); }
+.kcard-lbl { font-size:12px; color:var(--ink3); font-weight:500; position:relative; }
+
+/* TABLE */
+.tbox { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:20px; box-shadow:var(--shadow); }
+.tbox-head { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--border); background:var(--surface); }
+.tbox-title { font-size:14px; font-weight:700; color:var(--ink); display:flex; align-items:center; gap:7px; }
+.tbl { width:100%; border-collapse:collapse; }
+.tbl th { padding:10px 16px; font-size:11px; color:var(--ink3); text-align:right; border-bottom:1px solid var(--border); background:var(--surface2); font-weight:700; letter-spacing:0.5px; white-space:nowrap; text-transform:uppercase; }
+.tbl td { padding:12px 16px; font-size:13px; border-bottom:1px solid var(--border); vertical-align:middle; }
+.tbl tr:last-child td { border:none; }
+.tbl tr:hover td { background:var(--accent-light); }
+.tbl-empty { text-align:center; padding:40px; color:var(--ink3); }
+
+/* BADGE */
+.badge { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
+.badge::before { content:'●'; font-size:7px; }
+.badge-new { background:#e3f2fd; color:#1565c0; }
+.badge-active { background:var(--accent-light); color:var(--accent); }
+.badge-done { background:var(--green-light); color:var(--green); }
+.badge-partial { background:rgba(230,126,34,0.12); color:var(--orange); }
+.badge-cancelled { background:var(--red-light); color:var(--red); }
+.badge-debt { background:var(--red-light); color:var(--red); font-size:10px; }
+.badge-paid { background:var(--green-light); color:var(--green); font-size:10px; }
+
+/* MODAL */
+.overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(10,13,20,0.6); z-index:1000;
+  align-items:center; justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.overlay.open { display:flex; }
+.modal {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; padding:30px; width:580px; max-width:95vw;
+  max-height:92vh; overflow-y:auto;
+  box-shadow:var(--shadow-lg);
+  position:relative;
+  animation:modalIn 0.28s cubic-bezier(0.16,1,0.3,1);
+}
+.modal.wide { width:760px; }
+.modal.narrow { width:440px; }
+@keyframes modalIn { from{transform:scale(0.94) translateY(10px);opacity:0} to{transform:scale(1) translateY(0);opacity:1} }
+.modal-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+.modal-title { font-size:17px; font-weight:800; color:var(--ink); display:flex; align-items:center; gap:8px; }
+.modal-close { background:none; border:1px solid var(--border); font-size:16px; cursor:pointer; color:var(--ink3); width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; transition:all 0.2s; }
+.modal-close:hover { background:var(--red-light); color:var(--red); border-color:rgba(220,38,38,0.2); }
+
+/* FORM */
+.fg { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+.fg label { font-size:11px; color:var(--ink3); font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
+.fg input, .fg select, .fg textarea {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:9px; padding:10px 14px;
+  color:var(--ink); font-family:'Tajawal',sans-serif; font-size:13px;
+  outline:none; transition:all 0.2s; width:100%;
+}
+.fg input:focus, .fg select:focus, .fg textarea:focus { border-color:var(--accent); background:var(--surface); box-shadow:0 0 0 3px var(--accent-light); }
+.fg select option { background:var(--surface); }
+.fg textarea { resize:vertical; min-height:70px; }
+.fg-row { display:grid; gap:12px; }
+.fg-row.c2 { grid-template-columns:1fr 1fr; }
+.fg-row.c3 { grid-template-columns:1fr 1fr 1fr; }
+.divider { height:1px; background:var(--border); margin:16px 0; }
+
+/* SEARCH */
+.search-row { display:flex; gap:10px; margin-bottom:14px; }
+.search-inp {
+  flex:1; background:var(--surface); border:1px solid var(--border);
+  border-radius:9px; padding:9px 16px; color:var(--ink);
+  font-family:'Tajawal',sans-serif; font-size:13px; outline:none;
+  transition:all 0.2s; box-shadow:var(--shadow);
+}
+.search-inp:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-light); }
+.filter-sel {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:9px; padding:9px 14px; color:var(--ink);
+  font-family:'Tajawal',sans-serif; font-size:13px; outline:none;
+  cursor:pointer; box-shadow:var(--shadow);
+}
+
+/* PROFIT SUMMARY */
+.profit-panel {
+  background:linear-gradient(135deg,var(--accent-light),rgba(44,74,110,0.04));
+  border:1px solid var(--accent);
+  border-radius:10px; padding:16px; margin-top:14px;
+}
+.profit-panel .pp-title { font-size:12px; font-weight:700; color:var(--accent); margin-bottom:12px; letter-spacing:0.5px; }
+.pp-row { display:flex; justify-content:space-between; align-items:center; padding:5px 0; font-size:13px; }
+.pp-row .lbl { color:var(--ink3); }
+.pp-row .val { font-weight:600; }
+.pp-row .plus { color:var(--green); }
+.pp-row .minus { color:var(--red); }
+.pp-row .total { color:var(--accent); font-size:16px; font-weight:800; }
+.pp-div { height:1px; background:rgba(44,74,110,0.2); margin:8px 0; }
+
+/* COMPANY STATEMENT */
+.stmt-header { text-align:center; padding:24px 0 16px; }
+.stmt-logo-text { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:700; color:var(--accent); letter-spacing:3px; }
+.stmt-co { font-size:13px; color:var(--ink2); margin:4px 0; }
+.stmt-period { font-size:12px; color:var(--ink3); }
+.stmt-table-wrap table { width:100%; border-collapse:collapse; }
+.stmt-table-wrap th { background:var(--accent); color:white; padding:9px 12px; font-size:12px; text-align:right; }
+.stmt-table-wrap td { padding:8px 12px; font-size:12px; border-bottom:1px solid var(--border); }
+.stmt-total { display:flex; justify-content:space-between; align-items:center; padding:14px 0; font-size:15px; font-weight:800; color:var(--accent); border-top:2px solid var(--accent); margin-top:12px; }
+.stmt-footer { text-align:center; font-size:11px; color:var(--ink3); padding-top:16px; border-top:1px solid var(--border); margin-top:16px; }
+
+/* THEME CUSTOMIZER */
+.theme-colors { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.color-btn {
+  width:34px; height:34px; border-radius:50%; cursor:pointer;
+  border:2px solid transparent; transition:all 0.2s;
+}
+.color-btn.active, .color-btn:hover { border-color:var(--ink); transform:scale(1.1); }
+
+/* CHART */
+.bar-chart { display:flex; align-items:flex-end; gap:6px; height:100px; }
+.bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.bar { width:100%; background:var(--accent); border-radius:3px 3px 0 0; transition:height 0.4s ease; cursor:pointer; }
+.bar:hover { background:var(--accent2); }
+.bar-lbl { font-size:9px; color:var(--ink3); }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(16px);
+  background:var(--ink); color:var(--surface);
+  padding:12px 24px; border-radius:12px; font-size:13px; font-weight:600;
+  z-index:9999; opacity:0; pointer-events:none;
+  transition:all 0.3s cubic-bezier(0.16,1,0.3,1);
+  box-shadow:0 8px 24px rgba(0,0,0,0.2);
+  white-space:nowrap;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* DAILY INPUT */
+.daily-grid { display:grid; gap:1px; }
+.day-row {
+  display:grid; grid-template-columns:40px 110px 1fr 100px 100px 90px 90px;
+  align-items:center; gap:8px;
+  padding:7px 12px;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  transition:background 0.15s;
+}
+.day-row:hover { background:var(--surface2); }
+.day-row.weekend { opacity:0.5; }
+.day-row.today { background:var(--accent-light); border-right:3px solid var(--accent); }
+.day-row input[type=number] {
+  width:100%; padding:6px 10px; border:1px solid var(--border);
+  border-radius:5px; background:var(--surface2); color:var(--ink);
+  font-family:'Tajawal',sans-serif; font-size:13px; font-weight:600;
+  text-align:center; outline:none;
+}
+.day-row input[type=number]:focus { border-color:var(--accent); }
+.day-num { font-size:12px; color:var(--ink3); font-weight:600; }
+.day-name { font-size:11px; color:var(--ink3); }
+.day-total { font-size:13px; font-weight:700; color:var(--accent); }
+.day-cum { font-size:11px; color:var(--ink3); }
+.day-status { font-size:11px; }
+
+/* TABS */
+.tabs { display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:0; }
+.tab {
+  padding:8px 16px; font-size:13px; font-weight:500;
+  color:var(--ink3); cursor:pointer; border-radius:7px 7px 0 0;
+  border:1px solid transparent; border-bottom:none;
+  margin-bottom:-1px; transition:all 0.15s;
+}
+.tab.active { background:var(--surface); color:var(--accent); border-color:var(--border); font-weight:700; }
+.tab:hover:not(.active) { color:var(--ink); }
+
+/* PERMISSIONS */
+.perm-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); }
+.perm-row:last-child { border:none; }
+.perm-info { font-size:13px; }
+.perm-desc { font-size:11px; color:var(--ink3); margin-top:2px; }
+.toggle { position:relative; width:40px; height:22px; }
+.toggle input { opacity:0; width:0; height:0; }
+.slider {
+  position:absolute; inset:0; background:var(--border2);
+  border-radius:11px; cursor:pointer; transition:0.3s;
+}
+.slider::before {
+  content:''; position:absolute; height:16px; width:16px;
+  right:3px; top:3px; background:white;
+  border-radius:50%; transition:0.3s;
+}
+input:checked + .slider { background:var(--accent); }
+input:checked + .slider::before { transform:translateX(-18px); }
+
+.item-svc-select { font-size:12px; }
+/* ===== WORKFLOW STATUS ===== */
+.wf-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700;
+  white-space:nowrap; letter-spacing:0.2px;
+}
+.wf-new       { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+.wf-translate { background:#fef3c7; color:#d97706; border:1px solid #fcd34d; }
+.wf-review    { background:#ede9fe; color:#7c3aed; border:1px solid #c4b5fd; }
+.wf-notary    { background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; }
+.wf-ready     { background:#d1fae5; color:#065f46; border:1px solid #6ee7b7; }
+.wf-delivered { background:#f0fdf4; color:#16a34a; border:1px solid #86efac; }
+.wf-cancelled { background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; }
+
+/* ===== ORDER ID BADGE ===== */
+.order-id-badge {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px; font-weight:700;
+  color:var(--accent); background:var(--accent-light);
+  padding:3px 8px; border-radius:6px;
+  border:1px solid rgba(30,64,175,0.15);
+  letter-spacing:0.3px;
+}
+
+/* ===== ENHANCED DASHBOARD ===== */
+.dash-today-grid {
+  display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:20px;
+}
+.today-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:14px 16px;
+  text-align:center; cursor:pointer; transition:all 0.2s;
+  box-shadow:var(--shadow); position:relative; overflow:hidden;
+}
+.today-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+.today-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; border-radius:0 0 var(--radius) var(--radius); }
+.tc-blue::after   { background:linear-gradient(90deg,#1d4ed8,#3b82f6); }
+.tc-green::after  { background:linear-gradient(90deg,#16a34a,#22c55e); }
+.tc-orange::after { background:linear-gradient(90deg,#d97706,#f59e0b); }
+.tc-purple::after { background:linear-gradient(90deg,#7c3aed,#a78bfa); }
+.tc-red::after    { background:linear-gradient(90deg,#dc2626,#f87171); }
+.today-num { font-family:'IBM Plex Mono',monospace; font-size:32px; font-weight:700; margin-bottom:4px; }
+.today-lbl { font-size:11px; color:var(--ink3); font-weight:600; }
+.tc-blue .today-num   { color:#1d4ed8; }
+.tc-green .today-num  { color:#16a34a; }
+.tc-orange .today-num { color:#d97706; }
+.tc-purple .today-num { color:#7c3aed; }
+.tc-red .today-num    { color:#dc2626; }
+
+/* ===== WORKFLOW PIPELINE ===== */
+.pipeline-wrap {
+  display:flex; gap:8px; margin-bottom:20px; overflow-x:auto; padding-bottom:4px;
+}
+.pipeline-stage {
+  flex:1; min-width:110px; background:var(--surface);
+  border:1px solid var(--border); border-radius:var(--radius);
+  padding:12px; box-shadow:var(--shadow); cursor:pointer; transition:all 0.2s;
+}
+.pipeline-stage:hover { border-color:var(--accent); }
+.ps-label { font-size:10px; font-weight:700; color:var(--ink3); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+.ps-count { font-family:'IBM Plex Mono',monospace; font-size:28px; font-weight:800; color:var(--ink); }
+.ps-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-left:4px; }
+
+/* ===== PROFIT METER ===== */
+.profit-meter {
+  background:linear-gradient(135deg, #0f1624 0%, #1e2d4a 100%);
+  border-radius:var(--radius); padding:20px 24px;
+  color:white; position:relative; overflow:hidden;
+}
+.profit-meter::before {
+  content:''; position:absolute; top:-30px; left:-30px;
+  width:120px; height:120px; background:rgba(59,130,246,0.15);
+  border-radius:50%;
+}
+.pm-title { font-size:11px; color:rgba(255,255,255,0.5); font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; }
+.pm-val { font-family:'IBM Plex Mono',monospace; font-size:36px; font-weight:800; color:#60a5fa; margin-bottom:4px; }
+.pm-sub { font-size:12px; color:rgba(255,255,255,0.5); }
+.pm-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.1); }
+.pm-item .pm-item-val { font-family:'IBM Plex Mono',monospace; font-size:16px; font-weight:700; }
+.pm-item .pm-item-lbl { font-size:10px; color:rgba(255,255,255,0.4); margin-top:2px; }
+.pm-item.green .pm-item-val { color:#4ade80; }
+.pm-item.red .pm-item-val   { color:#f87171; }
+.pm-item.gold .pm-item-val  { color:#fbbf24; }
+
+/* ===== WORKFLOW CHANGE BUTTON ===== */
+.wf-next-btn {
+  padding:3px 9px; border:1px solid var(--border2);
+  border-radius:6px; background:none; cursor:pointer;
+  font-family:'Tajawal',sans-serif; font-size:11px; color:var(--ink3);
+  transition:all 0.2s; white-space:nowrap;
+}
+.wf-next-btn:hover { background:var(--accent); color:white; border-color:var(--accent); }
+
+/* PRINT STATEMENT */
+@media print {
+  #app > .topbar, .sidebar, .ph { display:none !important; }
+  .main { padding:0 !important; }
+  .tbox { box-shadow:none !important; border:1px solid #ccc !important; }
+}
+
+/* RESPONSIVE */
+@media (max-width:900px) {
+  .kpi-row.cols4 { grid-template-columns:1fr 1fr; }
+  .sidebar { width:180px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginScreen">
+  <div class="login-box">
+    <span class="login-logo">ГЛАГОЛ</span>
+    <div class="login-sub">نظام إدارة مكتب الترجمة والتصديق<br><span style="font-size:11px;font-family:'IBM Plex Mono',monospace;">Система управления бюро переводов</span></div>
+    <div class="role-select">
+      <button class="role-btn active" onclick="selectRole('admin',this)">👑 مدير</button>
+      <button class="role-btn" onclick="selectRole('reception',this)">🗂️ استقبال</button>
+      <button class="role-btn" onclick="selectRole('translator',this)">👤 مترجم</button>
+    </div>
+    <div class="login-field">
+      <label>كلمة المرور / Пароль</label>
+      <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">🔐 دخول / Войти</button>
+    <div class="login-error" id="loginError">❌ كلمة المرور غير صحيحة / Неверный пароль</div>
+    <div class="login-role-hint">admin: admin123 &nbsp;·&nbsp; recep: recep123 &nbsp;·&nbsp; staff: staff123</div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app" style="display:flex !important;">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="app-logo">ГЛАГОЛ <span>PRO</span></div>
+      <div class="tb-date" id="tbDate">2024/3/12</div>
+    </div>
+    <div class="topbar-right">
+      <div class="tb-user" id="tbUser">Admin User</div>
+      <button class="tb-btn" id="lang-btn" onclick="toggleLang()" title="تغيير اللغة / Язык" style="font-size:12px;font-weight:700;width:auto;padding:0 10px;">AR</button>
+      <button class="tb-btn" onclick="toggleTheme()" title="تبديل المظهر">🌙</button>
+      <button class="tb-btn" onclick="doLogout()" title="تسجيل الخروج">🚪</button>
+    </div>
+  </div>
+
+  <div class="body-wrap">
+    <div class="sidebar" id="sidebar">
+      <div class="nav-group">
+        <div class="nav-label" id="nav-label-main">الرئيسية</div>
+        <div class="nav-item active" id="nav-item-dashboard" onclick="nav('dashboard',this)"><span class="ni">📊</span> <span id="nav-item-dashboard">لوحة التحكم</span></div>
+        <div class="nav-item" id="nav-item-orders" onclick="nav('orders',this)"><span class="ni">📋</span> <span id="nav-text-orders">طلبات العملاء</span> <span class="nav-badge" id="nb-orders"></span></div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label" id="nav-label-services">الخدمات / Услуги</div>
+        <div class="nav-item" onclick="nav('services',this)"><span class="ni">📃</span> <span id="nav-item-services">قائمة الخدمات</span></div>
+      </div>
+      <div class="nav-group" id="nav-companies-group">
+        <div class="nav-label" id="nav-label-companies">الشركات</div>
+        <div class="nav-item" onclick="nav('companies',this)"><span class="ni">🏢</span> <span id="nav-item-companies">إدارة الشركات</span></div>
+        <div class="nav-item" onclick="nav('company-docs',this)"><span class="ni">📄</span> <span id="nav-item-company-docs">مستندات الشركات</span></div>
+        <div class="nav-item" onclick="nav('statements',this)"><span class="ni">📑</span> <span id="nav-item-statements">كشوفات الحساب</span> <span class="nav-badge red" id="nb-debts"></span></div>
+      </div>
+      <div class="nav-group" id="nav-finance-group">
+        <div class="nav-label" id="nav-label-finance">المالية</div>
+        <div class="nav-item" onclick="nav('finance',this)"><span class="ni">💰</span> <span id="nav-item-finance">الحسابات العامة</span></div>
+        <div class="nav-item" onclick="nav('reports',this)"><span class="ni">📈</span> <span id="nav-item-reports">التقارير والجرد</span></div>
+      </div>
+      <div class="nav-group" id="nav-admin-group">
+        <div class="nav-label" id="nav-label-admin">الإدارة</div>
+        <div class="nav-item" onclick="nav('staff',this)"><span class="ni">👥</span> <span id="nav-item-staff">الموظفون</span></div>
+        <div class="nav-item" onclick="nav('settings',this)"><span class="ni">⚙️</span> <span id="nav-item-settings">الإعدادات</span></div>
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="ph">
+          <div class="ph-title"><span id="dash-title-1">لوحة</span> <span id="dash-title-2">التحكم</span></div>
+          <div class="ph-actions">
+            <button class="btn btn-primary" id="btn-new-order" onclick="openModal('modal-order')">+ طلب جديد</button>
+            <button class="btn btn-outline" id="btn-new-doc" onclick="openModal('modal-company-doc')">+ مستند شركة</button>
+          </div>
+        </div>
+        <!-- TODAY STATS -->
+        <div class="dash-today-grid" id="dash-today"></div>
+        <!-- PROFIT METER + PIPELINE -->
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:20px;">
+          <div id="dash-profit-meter"></div>
+          <div class="tbox">
+            <div class="tbox-head"><div class="tbox-title" id="dash-weekly-title">📊 الإيرادات (7 أيام)</div></div>
+            <div style="padding:16px;"><div class="bar-chart" id="weekChart"></div><div style="display:flex;gap:6px;margin-top:6px;" id="weekLabels"></div></div>
+          </div>
+        </div>
+        <!-- KPI ROW -->
+        <div class="kpi-row cols4" id="dash-kpis"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+          <div class="tbox">
+            <div class="tbox-head"><div class="tbox-title" id="dash-debts-title">🏢 ديون الشركات</div><button class="btn btn-sm btn-outline" id="btn-view-debts" onclick="nav('statements',null)">عرض</button></div>
+            <div id="dash-debts" style="padding:8px 0;"></div>
+          </div>
+          <div class="tbox">
+            <div class="tbox-head"><div class="tbox-title" id="dash-notes-title">📌 ملاحظات اليوم</div></div>
+            <div style="padding:12px;">
+              <textarea id="dashNotes" style="width:100%;height:120px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px;font-family:Tajawal,sans-serif;font-size:13px;color:var(--ink);outline:none;resize:none;" placeholder="اكتب ملاحظات اليوم..." oninput="DB.notes=this.value;save()"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="tbox">
+          <div class="tbox-head"><div class="tbox-title" id="dash-recent-title">🕐 آخر الطلبات</div><button class="btn btn-sm btn-outline" id="btn-view-all-orders" onclick="nav('orders',null)">عرض الكل</button></div>
+          <div id="dash-recent"></div>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="page" id="page-orders">
+        <div class="ph">
+          <div class="ph-title"><span id="orders-title-1">طلبات</span> <span id="orders-title-2">العملاء</span></div>
+          <div class="ph-actions">
+            <button class="btn btn-primary" id="btn-add-order" onclick="openModal('modal-order')">+ طلب جديد</button>
+          </div>
+        </div>
+        <!-- Pipeline quick view -->
+        <div class="pipeline-wrap" id="orders-pipeline"></div>
+        <div class="search-row">
+          <input class="search-inp" id="orders-search" placeholder="🔍  بحث: الاسم، رقم الطلب TR-، الهاتف..." oninput="renderOrders(this.value,document.getElementById('ord-status-f').value,document.getElementById('ord-wf-f').value)">
+          <select class="filter-sel" id="ord-wf-f" onchange="renderOrders(document.getElementById('orders-search').value,document.getElementById('ord-status-f').value,this.value)">
+            <option value="">كل المراحل</option>
+            <option value="new">جديد</option>
+            <option value="translate">قيد الترجمة</option>
+            <option value="review">عند المراجع</option>
+            <option value="notary">عند النوتر</option>
+            <option value="ready">جاهز</option>
+            <option value="delivered">تم التسليم</option>
+            <option value="cancelled">ملغي</option>
+          </select>
+          <select class="filter-sel" id="ord-status-f" onchange="renderOrders(document.getElementById('orders-search').value,this.value,document.getElementById('ord-wf-f').value)">
+            <option value="">كل حالات الدفع</option>
+            <option value="new">غير مدفوع</option>
+            <option value="partial">جزئي</option>
+            <option value="done">مسدد</option>
+          </select>
+        </div>
+        <div class="tbox">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>رقم الطلب</th><th>التاريخ</th><th>العميل</th><th>الخدمة</th>
+                <th>السعر</th><th>المدفوع</th><th>المتبقي</th>
+                <th>الربح</th><th>مرحلة التنفيذ</th><th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="orders-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SERVICES -->
+      <div class="page" id="page-services">
+        <div class="ph">
+          <div class="ph-title">قائمة الخدمات <span>والأسعار</span> / <span style="font-size:16px;color:var(--ink3);">Услуги и цены</span></div>
+          <button class="btn btn-primary" onclick="openModal('modal-service')">+ إضافة خدمة</button>
+        </div>
+        <div class="search-row">
+          <input class="search-inp" id="srv-search" placeholder="🔍 بحث... / Поиск..." oninput="renderServices()">
+          <select class="filter-sel" id="srv-cat-f" onchange="renderServices()">
+            <option value="">كل الفئات / Все</option>
+          </select>
+        </div>
+        <div id="services-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
+      </div>
+
+      <!-- COMPANIES -->
+      <div class="page" id="page-companies">
+        <div class="ph">
+          <div class="ph-title">إدارة <span>الشركات</span></div>
+          <button class="btn btn-primary" onclick="openModal('modal-company')">+ شركة جديدة</button>
+        </div>
+        <div class="tbox">
+          <table class="tbl">
+            <thead>
+              <tr><th>#</th><th>اسم الشركة</th><th>جهة الاتصال</th><th>سعر المستند</th><th>إجمالي المستندات</th><th>المبلغ المستحق</th><th>المدفوع</th><th>الديون</th><th>إجراءات</th></tr>
+            </thead>
+            <tbody id="companies-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- COMPANY DOCS -->
+      <div class="page" id="page-company-docs">
+        <div class="ph">
+          <div class="ph-title">مستندات <span>الشركات</span></div>
+          <button class="btn btn-primary" onclick="openModal('modal-company-doc')">+ إدخال مستندات</button>
+        </div>
+        <div class="search-row">
+          <select class="filter-sel" id="cd-company-f" onchange="renderCompanyDocs()" style="flex:0 0 200px;">
+            <option value="">كل الشركات</option>
+          </select>
+          <select class="filter-sel" id="cd-month-f" onchange="renderCompanyDocs()">
+            <option value="">كل الأشهر</option>
+          </select>
+        </div>
+        <div class="tbox">
+          <table class="tbl">
+            <thead>
+              <tr><th>التاريخ</th><th>الشركة</th><th>عدد المستندات</th><th>سعر الوحدة</th><th>الإجمالي</th><th>الحالة</th><th>ملاحظة</th><th>إجراءات</th></tr>
+            </thead>
+            <tbody id="cdocs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- STATEMENTS -->
+      <div class="page" id="page-statements">
+        <div class="ph">
+          <div class="ph-title">كشوفات <span>الحساب</span></div>
+        </div>
+        <div class="search-row">
+          <select class="filter-sel" id="stmt-company-f" onchange="renderStatements()" style="flex:0 0 220px;">
+            <option value="">كل الشركات</option>
+          </select>
+          <select class="filter-sel" id="stmt-month-f" onchange="renderStatements()">
+            <option value="">كل الأشهر</option>
+          </select>
+          <button class="btn btn-outline" onclick="printStatement()">🖨️ طباعة / PDF</button>
+        </div>
+        <div id="stmt-content"></div>
+      </div>
+
+      <!-- FINANCE -->
+      <div class="page" id="page-finance">
+        <div class="ph">
+          <div class="ph-title">الحسابات <span>العامة</span></div>
+          <button class="btn btn-outline" onclick="openModal('modal-expense')">+ مصروف</button>
+        </div>
+        <div class="kpi-row cols4" id="fin-kpis"></div>
+        <div class="tbox">
+          <div class="tbox-head">
+            <div class="tbox-title">📋 سجل الطلبات المالي</div>
+          </div>
+          <table class="tbl">
+            <thead><tr><th>التاريخ</th><th>العميل / الشركة</th><th>الخدمة</th><th>المبلغ</th><th>المدفوع</th><th>الديون</th><th>الحالة</th></tr></thead>
+            <tbody id="fin-tbody"></tbody>
+          </table>
+        </div>
+        <div class="tbox">
+          <div class="tbox-head"><div class="tbox-title">📤 سجل المصروفات</div><button class="btn btn-sm btn-primary" onclick="openModal('modal-expense')">+ إضافة</button></div>
+          <table class="tbl">
+            <thead><tr><th>التاريخ</th><th>النوع</th><th>الوصف</th><th>المبلغ</th><th></th></tr></thead>
+            <tbody id="exp-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="page" id="page-reports">
+        <div class="ph">
+          <div class="ph-title">التقارير <span>والجرد</span></div>
+        </div>
+        <div class="tabs" id="report-tabs">
+          <div class="tab active" id="tab-daily" onclick="switchReportTab('daily',this)">جرد يومي</div>
+          <div class="tab" id="tab-weekly" onclick="switchReportTab('weekly',this)">جرد أسبوعي</div>
+          <div class="tab" id="tab-monthly" onclick="switchReportTab('monthly',this)">جرد شهري</div>
+          <div class="tab" id="tab-annual" onclick="switchReportTab('annual',this)">السنوي</div>
+          <div class="tab" id="tab-stats" onclick="switchReportTab('stats',this)">📊 إحصاءات</div>
+        </div>
+        <div id="advanced-stats" style="display:none;"></div>
+        <div id="report-content"></div>
+      </div>
+
+      <!-- STAFF -->
+      <div class="page" id="page-staff">
+        <div class="ph">
+          <div class="ph-title">إدارة <span>الموظفين</span></div>
+          <button class="btn btn-primary" onclick="openModal('modal-staff')">+ موظف جديد</button>
+        </div>
+        <div class="tbox">
+          <table class="tbl">
+            <thead><tr><th>الاسم</th><th>الدور</th><th>اللغات</th><th>الطلبات المنجزة</th><th>الصلاحيات</th><th>إجراءات</th></tr></thead>
+            <tbody id="staff-tbody"></tbody>
+          </table>
+        </div>
+        <div class="tbox">
+          <div class="tbox-head"><div class="tbox-title">🔐 إعدادات الصلاحيات</div></div>
+          <div style="padding:16px;" id="perm-settings"></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="page" id="page-settings">
+        <div class="ph"><div class="ph-title">إعدادات <span>النظام</span></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="tbox">
+            <div class="tbox-head"><div class="tbox-title">🎨 الألوان والمظهر</div></div>
+            <div style="padding:16px;">
+              <div class="fg"><label>اللون الرئيسي للنظام</label>
+                <div class="theme-colors" id="colorPalette"></div>
+              </div>
+              <div class="fg"><label>وضع العرض</label>
+                <div style="display:flex;gap:8px;margin-top:4px;">
+                  <button class="btn btn-outline" onclick="setTheme('light')">☀️ فاتح</button>
+                  <button class="btn btn-outline" onclick="setTheme('dark')">🌙 داكن</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tbox">
+            <div class="tbox-head"><div class="tbox-title">🔑 تغيير كلمات المرور</div></div>
+            <div style="padding:16px;">
+              <div class="fg"><label>كلمة مرور المدير الجديدة</label><input type="password" id="new-admin-pass" placeholder="••••••••"></div>
+              <div class="fg"><label>كلمة مرور الموظف الجديدة</label><input type="password" id="new-staff-pass" placeholder="••••••••"></div>
+              <button class="btn btn-primary" onclick="savePasses()">💾 حفظ</button>
+            </div>
+          </div>
+          <div class="tbox">
+            <div class="tbox-head"><div class="tbox-title">🏢 بيانات المكتب</div></div>
+            <div style="padding:16px;">
+              <div class="fg"><label>اسم المكتب</label><input id="s-office-name" value="ГЛАГОЛ" oninput="DB.settings.officeName=this.value;save()"></div>
+              <div class="fg"><label>العنوان</label><input id="s-office-addr" placeholder="موسكو، جامعة РУДН" oninput="DB.settings.officeAddr=this.value;save()"></div>
+              <div class="fg"><label>الهاتف</label><input id="s-office-phone" oninput="DB.settings.officePhone=this.value;save()"></div>
+            </div>
+          </div>
+          <div class="tbox">
+            <div class="tbox-head"><div class="tbox-title">💾 النسخ الاحتياطي</div></div>
+            <div style="padding:16px;">
+              <button class="btn btn-outline" onclick="exportData()" style="margin-bottom:10px;width:100%;">📥 تصدير جميع البيانات (JSON)</button>
+              <div class="fg"><label>استيراد بيانات</label><input type="file" id="importFile" accept=".json" onchange="importData(this)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- end main -->
+  </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+<!-- ORDER MODAL — MULTI ITEM -->
+<div class="overlay" id="modal-order">
+<div class="modal wide">
+  <div class="modal-hdr">
+    <div class="modal-title">📋 <span id="order-modal-title">طلب جديد / Новый заказ</span></div>
+    <button class="modal-close" onclick="closeModal('modal-order')">✕</button>
+  </div>
+  <input type="hidden" id="order-edit-id">
+
+  <!-- CLIENT INFO -->
+  <div style="background:var(--surface2);border-radius:9px;padding:14px;margin-bottom:14px;">
+    <div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:10px;letter-spacing:0.5px;">👤 بيانات العميل / Данные клиента</div>
+    <div class="fg-row c2">
+      <div class="fg"><label>اسم العميل * / Имя клиента</label><input id="o-client" placeholder="الاسم الكامل / Полное имя"></div>
+      <div class="fg"><label>رقم الهاتف / Телефон</label><input id="o-phone" placeholder="+7 ..."></div>
+    </div>
+    <div class="fg-row c3">
+      <div class="fg"><label>الجنسية / Гражданство</label>
+        <select id="o-nationality">
+          <option>مصرية / Египет</option><option>عربية / Арабская</option><option>أوزبكية / Узбекистан</option>
+          <option>بنغلاديشية / Бангладеш</option><option>صينية / Китай</option><option>رواندية / Руанда</option><option>أخرى / Другая</option>
+        </select>
+      </div>
+      <div class="fg"><label>التاريخ / Дата</label><input type="date" id="o-date"></div>
+      <div class="fg"><label>الموظف / Сотрудник</label><select id="o-staff"></select></div>
+    </div>
+    <div class="fg-row c2">
+      <div class="fg"><label>مبلغ الحجز ₽ / Задаток</label><input type="number" id="o-deposit" placeholder="0"></div>
+      <div class="fg"><label>الأولوية / Приоритет</label>
+        <select id="o-priority">
+          <option value="normal">عادي / Обычный</option>
+          <option value="urgent">عاجل / Срочный</option>
+          <option value="low">منخفضة / Низкий</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>ملاحظات / Примечания</label><textarea id="o-notes" rows="2" placeholder="أي تفاصيل إضافية... / Дополнительная информация..."></textarea></div>
+  </div>
+
+  <!-- ORDER ITEMS -->
+  <div style="margin-bottom:14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.5px;">📋 الخدمات المطلوبة / Услуги</div>
+      <button class="btn btn-outline btn-sm" onclick="addOrderItem()">+ إضافة خدمة / Добавить</button>
+    </div>
+    <!-- ITEM HEADER -->
+    <div style="display:grid;grid-template-columns:1fr 80px 80px 80px 80px 40px;gap:6px;padding:6px 8px;background:var(--surface3);border-radius:6px;margin-bottom:6px;">
+      <div style="font-size:10px;color:var(--ink3);font-weight:700;">الخدمة / Услуга</div>
+      <div style="font-size:10px;color:var(--ink3);font-weight:700;text-align:center;">سعر / Цена ₽</div>
+      <div style="font-size:10px;color:var(--ink3);font-weight:700;text-align:center;">للمترجم ₽</div>
+      <div style="font-size:10px;color:var(--ink3);font-weight:700;text-align:center;">للنوتاريس ₽</div>
+      <div style="font-size:10px;color:var(--ink3);font-weight:700;text-align:center;">ربح / Прибыль ₽</div>
+      <div></div>
+    </div>
+    <div id="order-items-list"></div>
+  </div>
+
+  <!-- TOTALS -->
+  <div class="profit-panel">
+    <div class="pp-title">📊 ملخص الطلب / Итоги заказа</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div style="text-align:center;padding:10px;background:var(--surface);border-radius:8px;">
+        <div style="font-size:18px;font-weight:800;color:var(--accent);" id="pp-total">0 ₽</div>
+        <div style="font-size:10px;color:var(--ink3);">إجمالي / Итого</div>
+      </div>
+      <div style="text-align:center;padding:10px;background:var(--surface);border-radius:8px;">
+        <div style="font-size:18px;font-weight:800;color:var(--red);" id="pp-costs">0 ₽</div>
+        <div style="font-size:10px;color:var(--ink3);">تكاليف / Расходы</div>
+      </div>
+      <div style="text-align:center;padding:10px;background:var(--surface);border-radius:8px;">
+        <div style="font-size:18px;font-weight:800;color:var(--green);" id="pp-netprofit">0 ₽</div>
+        <div style="font-size:10px;color:var(--ink3);">ربح صافي / Прибыль</div>
+      </div>
+    </div>
+    <div class="pp-row"><span class="lbl">المدفوع / Оплачено</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input type="number" id="o-paid" placeholder="0" oninput="recalcOrder()" style="width:110px;padding:5px 9px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--ink);font-family:Tajawal,sans-serif;font-size:13px;font-weight:700;outline:none;">
+        <span style="font-size:11px;color:var(--ink3);">₽</span>
+      </div>
+    </div>
+    <div class="pp-div"></div>
+    <div class="pp-row"><span class="lbl" style="font-weight:700;">المتبقي / Остаток</span><span class="val total" id="pp-remaining">0 ₽</span></div>
+  </div>
+
+  <div style="display:flex;gap:10px;margin-top:16px;">
+    <button class="btn btn-primary" style="flex:1" onclick="saveOrder()">💾 حفظ الطلب / Сохранить</button>
+    <button class="btn btn-outline" onclick="closeModal('modal-order')">إلغاء / Отмена</button>
+  </div>
+</div>
+</div>
+
+<!-- SERVICE MODAL -->
+<div class="overlay" id="modal-service">
+<div class="modal narrow">
+  <div class="modal-hdr">
+    <div class="modal-title">📃 إضافة خدمة / Добавить услугу</div>
+    <button class="modal-close" onclick="closeModal('modal-service')">✕</button>
+  </div>
+  <input type="hidden" id="sv-edit-id">
+  <div class="fg"><label>اسم الخدمة (عربي/روسي) *</label><input id="sv-name" placeholder="مثال: ПЕРЕВОД ПАСПОРТА / ترجمة جواز سفر"></div>
+  <div class="fg-row c2">
+    <div class="fg"><label>الفئة / Категория</label>
+      <select id="sv-cat">
+        <option>ترجمة وثائق</option><option>نوتاريوس</option>
+        <option>تصديق وزارات</option><option>تصديق سفارات</option><option>أبوستيل</option><option>أخرى</option>
+      </select>
+    </div>
+    <div class="fg"><label>السعر الافتراضي ₽</label><input type="number" id="sv-price" placeholder="700"></div>
+  </div>
+  <div style="display:flex;gap:10px;margin-top:12px;">
+    <button class="btn btn-primary" style="flex:1" onclick="saveService()">💾 حفظ</button>
+    <button class="btn btn-outline" onclick="closeModal('modal-service')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<!-- COMPANY MODAL -->
+<div class="overlay" id="modal-company">
+<div class="modal narrow">
+  <div class="modal-hdr">
+    <div class="modal-title">🏢 شركة جديدة</div>
+    <button class="modal-close" onclick="closeModal('modal-company')">✕</button>
+  </div>
+  <input type="hidden" id="co-edit-id">
+  <div class="fg"><label>اسم الشركة *</label><input id="co-name" placeholder="اسم الشركة"></div>
+  <div class="fg"><label>جهة الاتصال / البريد</label><input id="co-contact" placeholder="البريد الإلكتروني أو اسم المسؤول"></div>
+  <div class="fg"><label>سعر تصديق / ترجمة الوثيقة ₽</label><input type="number" id="co-price" placeholder="600"></div>
+  <div class="fg"><label>ملاحظات</label><textarea id="co-notes" placeholder="أي ملاحظات عن الشركة..."></textarea></div>
+  <div style="display:flex;gap:10px;margin-top:12px;">
+    <button class="btn btn-primary" style="flex:1" onclick="saveCompany()">💾 حفظ</button>
+    <button class="btn btn-outline" onclick="closeModal('modal-company')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<!-- COMPANY DOC MODAL -->
+<div class="overlay" id="modal-company-doc">
+<div class="modal narrow">
+  <div class="modal-hdr">
+    <div class="modal-title">📄 إدخال مستندات شركة</div>
+    <button class="modal-close" onclick="closeModal('modal-company-doc')">✕</button>
+  </div>
+  <input type="hidden" id="cd-edit-id">
+  <div class="fg"><label>الشركة *</label><select id="cd-company" onchange="autofillCdPrice()"></select></div>
+  <div class="fg-row c2">
+    <div class="fg"><label>التاريخ *</label><input type="date" id="cd-date"></div>
+    <div class="fg"><label>عدد المستندات *</label><input type="number" id="cd-qty" placeholder="1" min="1" oninput="calcCdTotal()"></div>
+  </div>
+  <div class="fg-row c2">
+    <div class="fg"><label>سعر الوحدة ₽</label><input type="number" id="cd-price" placeholder="600" oninput="calcCdTotal()"></div>
+    <div class="fg"><label>الإجمالي ₽</label><input type="number" id="cd-total" placeholder="0" readonly style="background:var(--surface3);"></div>
+  </div>
+  <div class="fg"><label>حالة الدفع</label>
+    <select id="cd-status">
+      <option value="unpaid">غير مدفوع</option>
+      <option value="partial">مدفوع جزئياً</option>
+      <option value="paid">مدفوع بالكامل</option>
+    </select>
+  </div>
+  <div class="fg"><label>المبلغ المدفوع ₽</label><input type="number" id="cd-paid" placeholder="0"></div>
+  <div class="fg"><label>ملاحظة</label><input id="cd-note" placeholder="مثال: إيميل، جوازات..."></div>
+  <div style="display:flex;gap:10px;margin-top:12px;">
+    <button class="btn btn-primary" style="flex:1" onclick="saveCompanyDoc()">💾 حفظ</button>
+    <button class="btn btn-outline" onclick="closeModal('modal-company-doc')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<!-- EXPENSE MODAL -->
+<div class="overlay" id="modal-expense">
+<div class="modal narrow">
+  <div class="modal-hdr">
+    <div class="modal-title">📤 تسجيل مصروف</div>
+    <button class="modal-close" onclick="closeModal('modal-expense')">✕</button>
+  </div>
+  <div class="fg"><label>نوع المصروف</label>
+    <select id="ex-type">
+      <option>إيجار</option><option>رواتب</option><option>طباعة ولوازم</option>
+      <option>اتصالات</option><option>مصروف إداري</option><option>أخرى</option>
+    </select>
+  </div>
+  <div class="fg"><label>المبلغ ₽</label><input type="number" id="ex-amount" placeholder="0"></div>
+  <div class="fg"><label>التاريخ</label><input type="date" id="ex-date"></div>
+  <div class="fg"><label>الوصف</label><input id="ex-desc" placeholder="وصف المصروف"></div>
+  <div style="display:flex;gap:10px;margin-top:12px;">
+    <button class="btn btn-primary" style="flex:1" onclick="saveExpense()">💾 حفظ</button>
+    <button class="btn btn-outline" onclick="closeModal('modal-expense')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<!-- STAFF MODAL -->
+<div class="overlay" id="modal-staff">
+<div class="modal narrow">
+  <div class="modal-hdr">
+    <div class="modal-title">👤 موظف جديد</div>
+    <button class="modal-close" onclick="closeModal('modal-staff')">✕</button>
+  </div>
+  <div class="fg"><label>الاسم *</label><input id="st-name" placeholder="اسم الموظف"></div>
+  <div class="fg"><label>الدور</label>
+    <select id="st-role"><option value="translator">مترجم</option><option value="admin">مدير</option><option value="reception">استقبال</option></select>
+  </div>
+  <div class="fg"><label>اللغات</label><input id="st-langs" placeholder="عربي ↔ روسي"></div>
+  <div style="display:flex;gap:10px;margin-top:12px;">
+    <button class="btn btn-primary" style="flex:1" onclick="saveStaff()">💾 حفظ</button>
+    <button class="btn btn-outline" onclick="closeModal('modal-staff')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="overlay" id="modal-payment">
+<div class="modal narrow">
+  <div class="modal-hdr">
+    <div class="modal-title">💳 تسجيل دفعة</div>
+    <button class="modal-close" onclick="closeModal('modal-payment')">✕</button>
+  </div>
+  <input type="hidden" id="pay-id">
+  <input type="hidden" id="pay-type">
+  <div id="pay-info" style="font-size:13px;color:var(--ink3);margin-bottom:14px;padding:10px;background:var(--surface2);border-radius:7px;"></div>
+  <div class="fg"><label>المبلغ المدفوع ₽</label><input type="number" id="pay-amount" placeholder="0"></div>
+  <div style="display:flex;gap:10px;margin-top:12px;">
+    <button class="btn btn-green" style="flex:1" onclick="savePayment()">✅ تأكيد الدفع</button>
+    <button class="btn btn-outline" onclick="closeModal('modal-payment')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===================== DATABASE =====================
+const DEFAULT_SERVICES = [
+    {id:1,name:'ПАСПОРТ (РАЗВОРОТ С ФОТО) / ترجمة جواز سفر (صفحة)',cat:'ترجمة وثائق',price:700},
+    {id:2,name:'ПОЛНЫЙ ПАСПОРТ (ВСЕХ СТРАНИЦАХ) / الجواز كامل',cat:'ترجمة وثائق',price:1500},
+    {id:3,name:'СВИДЕТЕЛЬСТВА (О РОЖДЕНИИ, О БРАКЕ, О СМЕРТИ) / شهادات',cat:'ترجمة وثائق',price:900},
+    {id:4,name:'АТТЕСТАТ, ДИПЛОМ, СЕРТИФИКАТ / شهادة دراسية',cat:'ترجمة وثائق',price:1200},
+    {id:5,name:'НОТАРИАЛЬНОЕ ЗАВЕРЕНИЕ / تصديق نوتاريوس',cat:'نوتاريوس',price:800},
+    {id:6,name:'НОТАРИАЛЬНОЕ ЗАВЕРЕНИЕ КОПИИ / تصديق نسخة',cat:'نوتاريوس',price:600},
+    {id:7,name:'ПЕРЕВОД АТТЕСТАТА О СРЕДНЕМ ОБРАЗОВАНИИ / شهادة ثانوية',cat:'ترجمة وثائق',price:1400},
+    {id:8,name:'ПЕРЕВОД СЕРТИФИКАТА ВЫПУСКНИКА / شهادة تخرج تحضيري',cat:'ترجمة وثائق',price:1000},
+    {id:9,name:'ПЕРЕВОД СПРАВКИ О НЕСУДИМОСТИ / شهادة حسن سيرة',cat:'ترجمة وثائق',price:900},
+    {id:10,name:'ПЕРЕВОД ДИПЛОМА И ПРИЛОЖЕНИЕ (1997-2010)',cat:'ترجمة وثائق',price:2200},
+    {id:11,name:'ПЕРЕВОД ДИПЛОМА И ПРИЛОЖЕНИЕ (после 2010)',cat:'ترجمة وثائق',price:2500},
+    {id:12,name:'ПЕРЕВОД ДИПЛОМА И ПРИЛОЖЕНИЕ (после 2014)',cat:'ترجمة وثائق',price:2800},
+    {id:13,name:'ПЕРЕВОД ДИПЛОМА КАНДИДАТА НАУК / دكتوراه',cat:'ترجمة وثائق',price:3500},
+    {id:14,name:'ПЕРЕВОД ДИПЛОМА О ДОПОЛНИТЕЛЬНОМ / دبلوم إضافي',cat:'ترجمة وثائق',price:1800},
+    {id:15,name:'ПЕРЕВОД ДИПЛОМА О ПЕРЕКВАЛИФИКАЦИИ / إعادة تأهيل',cat:'ترجمة وثائق',price:2000},
+    {id:16,name:'ПРИЛОЖЕНИЕ К ДИПЛОМУ О ПЕРЕКВАЛИФИКАЦИИ / ملحق',cat:'ترجمة وثائق',price:1600},
+    {id:17,name:'ПЕРЕВОД ЗАЧЕТНОЙ КНИЖКИ / كشف درجات',cat:'ترجمة وثائق',price:3000},
+    {id:18,name:'ПЕРЕВОД СПРАВКИ СТУДЕНТА / إفادة طالب',cat:'ترجمة وثائق',price:700},
+    {id:19,name:'ПЕРЕВОД СПРАВКИ АСПИРАНТА / إفادة دراسات عليا',cat:'ترجمة وثائق',price:700},
+    {id:20,name:'ПОВТОРНОЕ ЗАВЕРЕНИЕ / تصديق مكرر',cat:'نوتاريوس',price:400},
+    {id:21,name:'تصديق وزارة العدل / Минюст',cat:'تصديق وزارات',price:1500},
+    {id:22,name:'تصديق وزارة الخارجية / МИД',cat:'تصديق وزارات',price:1200},
+    {id:23,name:'تصديق سفارة / Посольство',cat:'تصديق سفارات',price:2000},
+    {id:24,name:'إصدار الأبوستيل / Апостиль',cat:'أبوستيل',price:3000},
+];
+
+const DEFAULT_DB = {
+  orders: [], companies: [], companyDocs: [], expenses: [], services: [], staff: [
+    {id:1,name:'مصطفى',role:'admin',langs:'عربي ↔ روسي'},
+  ],
+  settings: { officeName:'ГЛАГОЛ', officeAddr:'موسكو، РУДН', officePhone:'', accentColor:'#2c4a6e', theme:'light' },
+  notes: '',
+  passwords: { admin:'admin123', staff:'staff123' },
+  nextId: 100
+};
+
+let DB = JSON.parse(localStorage.getItem('glagol_pro_v2') || 'null') || JSON.parse(JSON.stringify(DEFAULT_DB));
+let currentRole = 'admin';
+
+function save() { localStorage.setItem('glagol_pro_v2', JSON.stringify(DB)); updateNavBadges(); }
+function n(x) { return Number(x)||0; }
+function fmt(x) { return n(x).toLocaleString('ru-RU') + ' ₽'; }
+function today() { return new Date().toISOString().split('T')[0]; }
+function tid() { return DB.nextId++; }
+
+// ===================== ORDER ID SYSTEM =====================
+function genOrderId() {
+  const year = new Date().getFullYear();
+  if(!DB.orderSeq) DB.orderSeq = 1;
+  const seq = String(DB.orderSeq++).padStart(4,'0');
+  return `TR-${year}-${seq}`;
+}
+
+// ===================== WORKFLOW =====================
+const WF_STEPS = [
+  { key:'new',       ar:'جديد',          ru:'Новый',         cls:'wf-new'       },
+  { key:'translate', ar:'قيد الترجمة',   ru:'Перевод',       cls:'wf-translate' },
+  { key:'review',    ar:'عند المراجع',    ru:'Проверка',      cls:'wf-review'    },
+  { key:'notary',    ar:'عند النوتر',     ru:'Нотариус',      cls:'wf-notary'    },
+  { key:'ready',     ar:'جاهز',           ru:'Готово',        cls:'wf-ready'     },
+  { key:'delivered', ar:'تم التسليم',     ru:'Выдано',        cls:'wf-delivered' },
+  { key:'cancelled', ar:'ملغي',           ru:'Отменён',       cls:'wf-cancelled' },
+];
+function getWfStep(key) { return WF_STEPS.find(s=>s.key===key) || WF_STEPS[0]; }
+function wfBadge(key) {
+  const s = getWfStep(key);
+  const lbl = currentLang==='ru' ? s.ru : s.ar;
+  return `<span class="wf-badge ${s.cls}">${lbl}</span>`;
+}
+function wfNextKey(key) {
+  const steps = WF_STEPS.filter(s=>s.key!=='cancelled');
+  const idx = steps.findIndex(s=>s.key===key);
+  if(idx<0 || idx>=steps.length-1) return null;
+  return steps[idx+1].key;
+}
+function advanceWorkflow(orderId) {
+  const o = DB.orders.find(o=>o.id===orderId);
+  if(!o) return;
+  const next = wfNextKey(o.workflow||'new');
+  if(!next) return;
+  o.workflow = next;
+  if(next==='delivered' && n(o.paid)>=n(o.price) && n(o.price)>0) o.status='done';
+  else if(next!=='cancelled') o.status='active';
+  save(); renderOrders();
+  showToast(`✅ ${wfBadge(next)}`);
+}
+
+// ===================== AUTH =====================
+let selectedRole = 'admin';
+function selectRole(r,el) {
+  selectedRole = r;
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+function doLogin() {
+  const pass = document.getElementById('loginPass').value;
+  const valid = (selectedRole==='admin' && pass===DB.passwords.admin) ||
+                (selectedRole==='reception' && pass===(DB.passwords.reception||'recep123')) ||
+                (selectedRole==='translator' && pass===DB.passwords.staff);
+  if(valid) {
+    currentRole = selectedRole;
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('app').classList.add('visible');
+    const roleLabels = {admin:'👑 مدير', reception:'🗂️ استقبال', translator:'👤 مترجم'};
+    document.getElementById('tbUser').textContent = roleLabels[currentRole]||currentRole;
+    applyPermissions();
+    updateDate();
+    renderDashboard();
+    updateNavBadges();
+    applyLang();
+    document.getElementById('dashNotes').value = DB.notes||'';
+    loadSettings();
+    applyTheme();
+    if(!DB.services||DB.services.length===0) { DB.services=[...DEFAULT_SERVICES]; save(); }
+  } else {
+    document.getElementById('loginError').style.display='block';
+    setTimeout(()=>document.getElementById('loginError').style.display='none',3000);
+  }
+}
+function doLogout() {
+  document.getElementById('loginPass').value='';
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('loginScreen').style.display='flex';
+}
+function applyPermissions() {
+  const isAdmin = currentRole==='admin';
+  const isReception = currentRole==='reception';
+  const isTranslator = currentRole==='translator';
+
+  // Finance & Admin nav — only admin sees
+  ['nav-finance-group','nav-admin-group'].forEach(id => {
+    const el=document.getElementById(id);
+    if(el) el.style.display=isAdmin?'':'none';
+  });
+
+  // Statements — admin & reception
+  const g = document.getElementById('nav-companies-group');
+  if(g) g.querySelectorAll('.nav-item').forEach((ni,i)=>{
+    if(i===2) ni.style.display = isAdmin?'':'none'; // statements
+  });
+
+  // Reports nav — only admin (unless permReports setting on)
+  const rptNav = document.getElementById('nav-item-reports')?.closest('.nav-item');
+  // (kept visible; JS report renders handle data hiding)
+}
+function savePasses() {
+  const a=document.getElementById('new-admin-pass').value;
+  const s=document.getElementById('new-staff-pass').value;
+  if(a) DB.passwords.admin=a;
+  if(s) DB.passwords.staff=s;
+  save(); showToast('✅ تم حفظ كلمات المرور');
+}
+function saveReceptionPass() {
+  const p=document.getElementById('new-recep-pass').value;
+  if(p) { DB.passwords.reception=p; save(); showToast('✅ تم حفظ كلمة مرور الاستقبال'); }
+}
+
+// ===================== NAVIGATION =====================
+function nav(id, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  else document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('active');
+  });
+  if(id==='dashboard') renderDashboard();
+  if(id==='orders') { renderOrders(); renderPipeline(); }
+  if(id==='companies') renderCompanies();
+  if(id==='company-docs') { populateCdFilters(); renderCompanyDocs(); }
+  if(id==='statements') { populateStmtFilters(); renderStatements(); }
+  if(id==='finance') renderFinance();
+  if(id==='reports') renderReport('daily');
+  if(id==='staff') renderStaff();
+  if(id==='services') { populateServiceCats(); renderServices(); }
+}
+
+// ===================== MODALS =====================
+function openModal(id) {
+  if(id==='modal-order') prepOrderModal();
+  if(id==='modal-company-doc') prepCdModal();
+  if(id==='modal-service') { document.getElementById('sv-edit-id').value=''; document.getElementById('sv-name').value=''; document.getElementById('sv-price').value=''; }
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); }));
+
+// ===================== ORDERS (MULTI-ITEM) =====================
+let orderItems = []; // [{serviceId,serviceName,price,translatorFee,notaryFee,profit}]
+
+function getServicesDB() {
+  if(!DB.services||DB.services.length===0) DB.services=[...DEFAULT_SERVICES];
+  return DB.services;
+}
+
+function prepOrderModal(order=null) {
+  document.getElementById('order-modal-title').textContent = order ? 'تعديل الطلب / Редактировать' : 'طلب جديد / Новый заказ';
+  document.getElementById('order-edit-id').value = order?.id||'';
+  document.getElementById('o-client').value = order?.client||'';
+  document.getElementById('o-phone').value = order?.phone||'';
+  document.getElementById('o-deposit').value = order?.deposit||'';
+  document.getElementById('o-paid').value = order?.paid||'';
+  document.getElementById('o-notes').value = order?.notes||'';
+  document.getElementById('o-date').value = order?.date||today();
+  const s=document.getElementById('o-staff');
+  s.innerHTML='<option value="">-- غير محدد --</option>'+DB.staff.map(st=>`<option value="${st.id}" ${order?.staffId===st.id?'selected':''}>${st.name}</option>`).join('');
+  if(order?.nationality) document.getElementById('o-nationality').value=order.nationality;
+  // load items
+  orderItems = order?.items ? JSON.parse(JSON.stringify(order.items)) : [];
+  if(orderItems.length===0) addOrderItem();
+  else renderOrderItems();
+  recalcOrder();
+}
+
+function addOrderItem() {
+  orderItems.push({id:Date.now()+Math.random(),serviceName:'',price:0,translatorFee:0,notaryFee:0,profit:0});
+  renderOrderItems();
+  recalcOrder();
+}
+
+function removeOrderItem(idx) {
+  orderItems.splice(idx,1);
+  if(orderItems.length===0) addOrderItem();
+  else { renderOrderItems(); recalcOrder(); }
+}
+
+function renderOrderItems() {
+  const svs=getServicesDB();
+  const svOptions='<option value="">-- اختر / Выбрать --</option>'+svs.map(s=>`<option value="${s.id}" data-price="${s.price}">${s.name}</option>`).join('');
+  document.getElementById('order-items-list').innerHTML = orderItems.map((item,i)=>`
+    <div style="display:grid;grid-template-columns:1fr 80px 80px 80px 80px 34px;gap:5px;align-items:center;padding:7px 8px;background:var(--surface2);border-radius:7px;margin-bottom:5px;border:1px solid var(--border);">
+      <select onchange="itemServiceChange(${i},this)" style="padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--ink);font-family:Tajawal,sans-serif;font-size:12px;outline:none;">
+        ${svOptions.replace(`value="${item.serviceId}"`,`value="${item.serviceId}" selected`)}
+      </select>
+      <input type="number" value="${item.price||''}" placeholder="0" oninput="itemUpdate(${i},'price',this.value)" style="width:100%;padding:6px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--ink);font-size:12px;font-weight:700;text-align:center;outline:none;">
+      <input type="number" value="${item.translatorFee||''}" placeholder="0" oninput="itemUpdate(${i},'translatorFee',this.value)" style="width:100%;padding:6px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--red);font-size:12px;text-align:center;outline:none;">
+      <input type="number" value="${item.notaryFee||''}" placeholder="0" oninput="itemUpdate(${i},'notaryFee',this.value)" style="width:100%;padding:6px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--orange);font-size:12px;text-align:center;outline:none;">
+      <div style="text-align:center;font-size:12px;font-weight:700;color:${item.profit>=0?'var(--green)':'var(--red)'};">${fmt(item.profit)}</div>
+      <button onclick="removeOrderItem(${i})" style="width:28px;height:28px;border:1px solid var(--red-light);background:var(--red-light);color:var(--red);border-radius:5px;cursor:pointer;font-size:13px;">✕</button>
+    </div>
+  `).join('');
+}
+
+function itemServiceChange(idx,sel) {
+  const opt=sel.options[sel.selectedIndex];
+  orderItems[idx].serviceId=+sel.value||null;
+  orderItems[idx].serviceName=opt.text;
+  const defPrice=+opt.getAttribute('data-price')||0;
+  if(!orderItems[idx].price) orderItems[idx].price=defPrice;
+  itemCalc(idx); renderOrderItems(); recalcOrder();
+}
+
+function itemUpdate(idx,field,val) {
+  orderItems[idx][field]=n(val);
+  itemCalc(idx); recalcOrder();
+}
+
+function itemCalc(idx) {
+  const it=orderItems[idx];
+  it.profit=n(it.price)-n(it.translatorFee)-n(it.notaryFee);
+}
+
+function recalcOrder() {
+  const total=orderItems.reduce((s,it)=>s+n(it.price),0);
+  const costs=orderItems.reduce((s,it)=>s+n(it.translatorFee)+n(it.notaryFee),0);
+  const netProfit=total-costs;
+  const paid=n(document.getElementById('o-paid').value);
+  document.getElementById('pp-total').textContent=fmt(total);
+  document.getElementById('pp-costs').textContent=fmt(costs);
+  document.getElementById('pp-netprofit').textContent=fmt(netProfit);
+  document.getElementById('pp-remaining').textContent=fmt(total-paid);
+  document.getElementById('pp-remaining').style.color=total-paid>0?'var(--red)':'var(--green)';
+}
+
+function saveOrder() {
+  const client=document.getElementById('o-client').value.trim();
+  if(!client){showToast('⚠️ أدخل اسم العميل / Введите имя');return;}
+  const validItems=orderItems.filter(it=>it.price>0||it.serviceName);
+  if(!validItems.length){showToast('⚠️ أضف خدمة واحدة على الأقل');return;}
+  const editId=document.getElementById('order-edit-id').value;
+  const existingOrder = editId ? DB.orders.find(o=>o.id===+editId) : null;
+  const total=validItems.reduce((s,it)=>s+n(it.price),0);
+  const totalCosts=validItems.reduce((s,it)=>s+n(it.translatorFee)+n(it.notaryFee),0);
+  const netProfit=total-totalCosts;
+  const paid=n(document.getElementById('o-paid').value);
+  let status='new';
+  if(paid>=total&&total>0) status='done';
+  else if(paid>0) status='partial';
+  const serviceNames=validItems.map(it=>it.serviceName||'خدمة').join(' + ');
+  const order={
+    id:editId?+editId:tid(),
+    orderRef: existingOrder?.orderRef || genOrderId(),
+    workflow: existingOrder?.workflow || 'new',
+    client,phone:document.getElementById('o-phone').value,
+    nationality:document.getElementById('o-nationality').value,
+    service:serviceNames,
+    items:validItems,
+    price:total,totalCosts,netProfit,
+    deposit:n(document.getElementById('o-deposit').value),
+    paid,remaining:total-paid,status,
+    staffId:+document.getElementById('o-staff').value||null,
+    priority:document.getElementById('o-priority').value,
+    notes:document.getElementById('o-notes').value,
+    date:document.getElementById('o-date').value||today(),
+    createdAt:editId?(existingOrder?.createdAt||today()):today()
+  };
+  if(editId){const idx=DB.orders.findIndex(o=>o.id===+editId);if(idx>=0)DB.orders[idx]=order;}
+  else DB.orders.push(order);
+  save(); closeModal('modal-order'); renderOrders(); renderDashboard();
+  showToast('✅ ' + (order.orderRef||('#'+order.id)));
+}
+function editOrder(id) {
+  const o=DB.orders.find(o=>o.id===id);
+  if(o){prepOrderModal(o); openModal('modal-order');}
+}
+function deleteOrder(id) {
+  if(!confirm('حذف هذا الطلب نهائياً؟')) return;
+  DB.orders=DB.orders.filter(o=>o.id!==id);
+  save(); renderOrders(); renderDashboard(); showToast('تم الحذف');
+}
+function changeOrderStatus(id,s){
+  const o=DB.orders.find(o=>o.id===id); if(o){o.status=s;save();renderOrders();}
+}
+function openPayOrder(id) {
+  const o=DB.orders.find(o=>o.id===id); if(!o)return;
+  document.getElementById('pay-id').value=id;
+  document.getElementById('pay-type').value='order';
+  document.getElementById('pay-info').innerHTML=`<b>${o.client}</b><br>${o.service}<br>الباقي: <b style="color:var(--red)">${fmt(o.remaining)}</b>`;
+  document.getElementById('pay-amount').value=o.remaining||'';
+  openModal('modal-payment');
+}
+function savePayment() {
+  const id=+document.getElementById('pay-id').value;
+  const type=document.getElementById('pay-type').value;
+  const amount=n(document.getElementById('pay-amount').value);
+  if(type==='order'){
+    const o=DB.orders.find(o=>o.id===id); if(!o)return;
+    o.paid=Math.min(o.price,n(o.paid)+amount);
+    o.remaining=Math.max(0,o.price-o.paid);
+    if(o.remaining<=0) o.status='done'; else if(o.paid>0) o.status='partial';
+  } else if(type==='cdoc'){
+    const cd=DB.companyDocs.find(d=>d.id===id); if(!cd)return;
+    cd.paid=Math.min(cd.total,n(cd.paid)+amount);
+    if(cd.paid>=cd.total) cd.status='paid'; else if(cd.paid>0) cd.status='partial';
+  }
+  save(); closeModal('modal-payment');
+  renderOrders(); renderCompanyDocs(); renderStatements(); renderDashboard();
+  showToast('✅ تم تسجيل الدفعة');
+}
+
+// ===================== PIPELINE =====================
+function renderPipeline() {
+  const container = document.getElementById('orders-pipeline');
+  if(!container) return;
+  const dotColors = {'new':'#1d4ed8','translate':'#d97706','review':'#7c3aed','notary':'#c2410c','ready':'#065f46','delivered':'#16a34a','cancelled':'#dc2626'};
+  container.innerHTML = WF_STEPS.map(s=>{
+    const cnt = DB.orders.filter(o=>(o.workflow||'new')===s.key).length;
+    const lbl = currentLang==='ru' ? s.ru : s.ar;
+    return `<div class="pipeline-stage" onclick="document.getElementById('ord-wf-f').value='${s.key}';renderOrders(document.getElementById('orders-search')?.value||'','',document.getElementById('ord-wf-f').value)">
+      <div class="ps-label"><span class="ps-dot" style="background:${dotColors[s.key]}"></span>${lbl}</div>
+      <div class="ps-count">${cnt}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderOrders(search='',statusF='',wfF='') {
+  let rows=[...DB.orders].reverse();
+  if(search) rows=rows.filter(o=>{
+    const s=search.toLowerCase();
+    return o.client.toLowerCase().includes(s) || String(o.id).includes(s) ||
+           (o.orderRef||'').toLowerCase().includes(s) ||
+           (o.phone||'').includes(s) || (o.service||'').toLowerCase().includes(s);
+  });
+  if(statusF) rows=rows.filter(o=>o.status===statusF);
+  if(wfF) rows=rows.filter(o=>(o.workflow||'new')===wfF);
+  document.getElementById('orders-tbody').innerHTML=rows.length?rows.map(o=>{
+    const wfStep = getWfStep(o.workflow||'new');
+    const nextKey = wfNextKey(o.workflow||'new');
+    const nextStep = nextKey ? getWfStep(nextKey) : null;
+    const itemsHtml=o.items&&o.items.length?`<div style="margin-top:4px;">${o.items.map(it=>`<div style="font-size:10px;color:var(--ink3);display:flex;justify-content:space-between;padding:1px 0;"><span>${it.serviceName||'خدمة'}</span><span style="color:var(--accent);font-weight:600;">${fmt(it.price)}</span></div>`).join('')}</div>`:'';
+    return `<tr>
+      <td><span class="order-id-badge">${o.orderRef||('#'+o.id)}</span></td>
+      <td style="color:var(--ink3);font-size:11px;">${o.date}</td>
+      <td><div style="font-weight:700;">${o.client}</div><div style="font-size:11px;color:var(--ink3);">${o.phone||''}</div></td>
+      <td style="font-size:12px;max-width:180px;">${o.service}${itemsHtml}</td>
+      <td style="font-weight:700;font-family:'IBM Plex Mono',monospace;">${fmt(o.price)}</td>
+      <td style="color:var(--green);font-family:'IBM Plex Mono',monospace;">${fmt(o.paid)}</td>
+      <td style="color:${o.remaining>0?'var(--red)':'var(--green)'};font-weight:700;font-family:'IBM Plex Mono',monospace;">${o.remaining>0?fmt(o.remaining):'✅'}</td>
+      <td style="color:var(--green);font-size:12px;font-family:'IBM Plex Mono',monospace;">${o.netProfit!==undefined?fmt(o.netProfit):''}</td>
+      <td>
+        ${wfBadge(o.workflow||'new')}
+        ${nextStep && currentRole==='admin' ? `<br><button class="wf-next-btn" style="margin-top:4px;" onclick="advanceWorkflow(${o.id})">→ ${currentLang==='ru'?nextStep.ru:nextStep.ar}</button>` : ''}
+      </td>
+      <td><div style="display:flex;gap:3px;flex-wrap:wrap;">
+        ${o.remaining>0?`<button class="btn btn-green btn-xs" onclick="openPayOrder(${o.id})" title="دفع">💳</button>`:''}
+        <button class="btn btn-outline btn-xs" onclick="editOrder(${o.id})" title="تعديل">✏️</button>
+        ${currentRole==='admin'?`<button class="btn btn-red btn-xs" onclick="deleteOrder(${o.id})" title="حذف">✕</button>`:''}
+        <button class="btn btn-outline btn-xs" onclick="generateInvoice(${o.id})" title="فاتورة">🧾</button>
+      </div></td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="10" class="tbl-empty">لا توجد طلبات / Нет заказов</td></tr>`;
+}
+
+// ===================== SERVICES =====================
+function saveService() {
+  const name=document.getElementById('sv-name').value.trim();
+  if(!name){showToast('⚠️ أدخل اسم الخدمة');return;}
+  if(!DB.services||DB.services.length===0) DB.services=[...DEFAULT_SERVICES];
+  const editId=document.getElementById('sv-edit-id').value;
+  const sv={id:editId?+editId:tid(),name,cat:document.getElementById('sv-cat').value,price:n(document.getElementById('sv-price').value)||0};
+  if(editId){const i=DB.services.findIndex(s=>s.id===+editId);if(i>=0)DB.services[i]=sv;}
+  else DB.services.push(sv);
+  save(); closeModal('modal-service'); renderServices();
+  showToast('✅ تمت إضافة الخدمة');
+}
+function editService(id) {
+  if(!DB.services)DB.services=[...DEFAULT_SERVICES];
+  const sv=DB.services.find(s=>s.id===id); if(!sv)return;
+  document.getElementById('sv-edit-id').value=sv.id;
+  document.getElementById('sv-name').value=sv.name;
+  document.getElementById('sv-cat').value=sv.cat;
+  document.getElementById('sv-price').value=sv.price;
+  openModal('modal-service');
+}
+function deleteService(id) {
+  if(!confirm('حذف هذه الخدمة؟'))return;
+  DB.services=DB.services.filter(s=>s.id!==id);
+  save(); renderServices();
+}
+function populateServiceCats() {
+  if(!DB.services||DB.services.length===0) DB.services=[...DEFAULT_SERVICES];
+  const cats=[...new Set(DB.services.map(s=>s.cat))];
+  const sel=document.getElementById('srv-cat-f');
+  const val=sel.value;
+  sel.innerHTML='<option value="">كل الفئات / Все</option>'+cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+  if(val) sel.value=val;
+}
+function renderServices() {
+  if(!DB.services||DB.services.length===0) DB.services=[...DEFAULT_SERVICES];
+  const search=(document.getElementById('srv-search')?.value||'').toLowerCase();
+  const catF=document.getElementById('srv-cat-f')?.value||'';
+  let svs=DB.services;
+  if(search) svs=svs.filter(s=>s.name.toLowerCase().includes(search));
+  if(catF) svs=svs.filter(s=>s.cat===catF);
+  const cats=[...new Set(svs.map(s=>s.cat))];
+  // group by category
+  let html='';
+  cats.forEach(cat=>{
+    const catSvs=svs.filter(s=>s.cat===cat);
+    html+=`<div style="grid-column:1/-1;padding:10px 0 4px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);margin-bottom:4px;">${cat}</div>`;
+    html+=catSvs.map(s=>`
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">${s.name}</div>
+          <div style="font-size:10px;color:var(--ink3);">${s.cat}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:18px;font-weight:800;color:var(--accent);">${s.price.toLocaleString()} ₽</div>
+          <button class="btn btn-outline btn-xs" onclick="editService(${s.id})">✏️</button>
+          <button class="btn btn-red btn-xs" onclick="deleteService(${s.id})">✕</button>
+        </div>
+      </div>`).join('');
+  });
+  document.getElementById('services-grid').innerHTML=html||'<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--ink3);">لا توجد خدمات</div>';
+}
+
+// ===================== COMPANIES =====================
+function saveCompany() {
+  const name=document.getElementById('co-name').value.trim();
+  if(!name){showToast('⚠️ أدخل اسم الشركة');return;}
+  const editId=document.getElementById('co-edit-id').value;
+  const co={
+    id:editId?+editId:tid(),
+    name,contact:document.getElementById('co-contact').value,
+    unitPrice:n(document.getElementById('co-price').value)||600,
+    notes:document.getElementById('co-notes').value
+  };
+  if(editId){const i=DB.companies.findIndex(c=>c.id===+editId);if(i>=0)DB.companies[i]=co;}
+  else DB.companies.push(co);
+  save(); closeModal('modal-company'); renderCompanies(); populateCdFilters(); populateStmtFilters();
+  showToast('✅ تم حفظ الشركة');
+}
+function editCompany(id) {
+  const co=DB.companies.find(c=>c.id===id); if(!co)return;
+  document.getElementById('co-edit-id').value=co.id;
+  document.getElementById('co-name').value=co.name;
+  document.getElementById('co-contact').value=co.contact||'';
+  document.getElementById('co-price').value=co.unitPrice;
+  document.getElementById('co-notes').value=co.notes||'';
+  openModal('modal-company');
+}
+function deleteCompany(id) {
+  if(!confirm('حذف الشركة وجميع مستنداتها؟'))return;
+  DB.companies=DB.companies.filter(c=>c.id!==id);
+  DB.companyDocs=DB.companyDocs.filter(d=>d.companyId!==id);
+  save(); renderCompanies(); showToast('تم الحذف');
+}
+function getCompanyStats(coId) {
+  const docs=DB.companyDocs.filter(d=>d.companyId===coId);
+  return {
+    totalDocs:docs.reduce((s,d)=>s+n(d.qty),0),
+    totalAmount:docs.reduce((s,d)=>s+n(d.total),0),
+    totalPaid:docs.reduce((s,d)=>s+n(d.paid),0),
+    totalDebt:docs.reduce((s,d)=>s+Math.max(0,n(d.total)-n(d.paid)),0),
+  };
+}
+function renderCompanies() {
+  document.getElementById('companies-tbody').innerHTML=DB.companies.length?
+    DB.companies.map(co=>{
+      const st=getCompanyStats(co.id);
+      return `<tr>
+        <td style="color:var(--ink3);font-size:12px;">#${co.id}</td>
+        <td><div style="font-weight:600;">${co.name}</div></td>
+        <td style="font-size:12px;color:var(--ink3);">${co.contact||'—'}</td>
+        <td><span style="font-weight:700;color:var(--accent);">${fmt(co.unitPrice)}</span>/وثيقة</td>
+        <td style="font-weight:600;">${st.totalDocs.toLocaleString()}</td>
+        <td>${fmt(st.totalAmount)}</td>
+        <td style="color:var(--green);">${fmt(st.totalPaid)}</td>
+        <td><span class="badge ${st.totalDebt>0?'badge-debt':'badge-paid'}">${st.totalDebt>0?fmt(st.totalDebt):'✅ لا ديون'}</span></td>
+        <td><div style="display:flex;gap:4px;">
+          <button class="btn btn-outline btn-xs" onclick="editCompany(${co.id})">✏️</button>
+          <button class="btn btn-primary btn-xs" onclick="quickAddDoc(${co.id})">+ مستند</button>
+          ${currentRole==='admin'?`<button class="btn btn-red btn-xs" onclick="deleteCompany(${co.id})">✕</button>`:''}
+        </div></td>
+      </tr>`;
+    }).join(''):`<tr><td colspan="9" class="tbl-empty">لا توجد شركات</td></tr>`;
+}
+function quickAddDoc(coId) {
+  document.getElementById('cd-company').value=coId;
+  autofillCdPrice();
+  openModal('modal-company-doc');
+}
+
+// ===================== COMPANY DOCS =====================
+function prepCdModal(doc=null) {
+  const s=document.getElementById('cd-company');
+  s.innerHTML='<option value="">-- اختر الشركة --</option>'+DB.companies.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('cd-edit-id').value=doc?.id||'';
+  document.getElementById('cd-date').value=doc?.date||today();
+  document.getElementById('cd-qty').value=doc?.qty||1;
+  document.getElementById('cd-price').value=doc?.unitPrice||'';
+  document.getElementById('cd-total').value=doc?.total||'';
+  document.getElementById('cd-status').value=doc?.status||'unpaid';
+  document.getElementById('cd-paid').value=doc?.paid||0;
+  document.getElementById('cd-note').value=doc?.note||'';
+  if(doc) { s.value=doc.companyId; }
+}
+function autofillCdPrice() {
+  const coId=+document.getElementById('cd-company').value;
+  const co=DB.companies.find(c=>c.id===coId);
+  if(co){ document.getElementById('cd-price').value=co.unitPrice; calcCdTotal(); }
+}
+function calcCdTotal() {
+  const qty=n(document.getElementById('cd-qty').value);
+  const price=n(document.getElementById('cd-price').value);
+  document.getElementById('cd-total').value=qty*price;
+}
+function saveCompanyDoc() {
+  const coId=+document.getElementById('cd-company').value;
+  if(!coId){showToast('⚠️ اختر الشركة');return;}
+  const qty=n(document.getElementById('cd-qty').value);
+  if(!qty){showToast('⚠️ أدخل عدد المستندات');return;}
+  const editId=document.getElementById('cd-edit-id').value;
+  const total=qty*n(document.getElementById('cd-price').value);
+  const paid=n(document.getElementById('cd-paid').value);
+  const doc={
+    id:editId?+editId:tid(),
+    companyId:coId,companyName:DB.companies.find(c=>c.id===coId)?.name||'',
+    date:document.getElementById('cd-date').value||today(),
+    qty,unitPrice:n(document.getElementById('cd-price').value),total,
+    status:document.getElementById('cd-status').value,
+    paid,note:document.getElementById('cd-note').value
+  };
+  if(paid>=total&&total>0) doc.status='paid'; else if(paid>0) doc.status='partial';
+  if(editId){const i=DB.companyDocs.findIndex(d=>d.id===+editId);if(i>=0)DB.companyDocs[i]=doc;}
+  else DB.companyDocs.push(doc);
+  save(); closeModal('modal-company-doc'); renderCompanyDocs(); renderCompanies(); renderDashboard();
+  showToast('✅ تم تسجيل المستندات');
+}
+function editCdoc(id){
+  const d=DB.companyDocs.find(d=>d.id===id); if(!d)return;
+  prepCdModal(d); openModal('modal-company-doc');
+}
+function deleteCdoc(id){
+  if(!confirm('حذف هذا السجل؟'))return;
+  DB.companyDocs=DB.companyDocs.filter(d=>d.id!==id);
+  save(); renderCompanyDocs(); renderCompanies(); showToast('تم الحذف');
+}
+function openPayCdoc(id){
+  const d=DB.companyDocs.find(d=>d.id===id); if(!d)return;
+  document.getElementById('pay-id').value=id;
+  document.getElementById('pay-type').value='cdoc';
+  document.getElementById('pay-info').innerHTML=`<b>${d.companyName}</b><br>${d.date} — ${d.qty} مستند<br>الباقي: <b style="color:var(--red)">${fmt(d.total-d.paid)}</b>`;
+  document.getElementById('pay-amount').value=Math.max(0,d.total-d.paid);
+  openModal('modal-payment');
+}
+function populateCdFilters() {
+  const coSel=document.getElementById('cd-company-f');
+  const saved=coSel.value;
+  coSel.innerHTML='<option value="">كل الشركات</option>'+DB.companies.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  if(saved) coSel.value=saved;
+  const months=[...new Set(DB.companyDocs.map(d=>d.date.slice(0,7)))].sort().reverse();
+  const mSel=document.getElementById('cd-month-f');
+  mSel.innerHTML='<option value="">كل الأشهر</option>'+months.map(m=>`<option value="${m}">${m}</option>`).join('');
+}
+function renderCompanyDocs() {
+  const coF=document.getElementById('cd-company-f').value;
+  const mF=document.getElementById('cd-month-f').value;
+  let rows=[...DB.companyDocs].reverse();
+  if(coF) rows=rows.filter(d=>String(d.companyId)===coF);
+  if(mF) rows=rows.filter(d=>d.date.startsWith(mF));
+  const smap={unpaid:'badge-debt غير مدفوع',partial:'badge-partial جزئي',paid:'badge-paid مدفوع'};
+  document.getElementById('cdocs-tbody').innerHTML=rows.length?rows.map(d=>{
+    const [sc,sl]=(smap[d.status]||'badge-debt غير مدفوع').split(' ');
+    return `<tr>
+      <td>${d.date}</td><td style="font-weight:600;">${d.companyName}</td>
+      <td style="text-align:center;font-weight:700;font-size:15px;">${d.qty}</td>
+      <td>${fmt(d.unitPrice)}</td>
+      <td style="font-weight:700;">${fmt(d.total)}</td>
+      <td><span class="badge ${sc}">${sl}</span></td>
+      <td style="font-size:12px;color:var(--ink3);">${d.note||'—'}</td>
+      <td><div style="display:flex;gap:4px;">
+        ${d.status!=='paid'?`<button class="btn btn-green btn-xs" onclick="openPayCdoc(${d.id})">💳</button>`:''}
+        <button class="btn btn-outline btn-xs" onclick="editCdoc(${d.id})">✏️</button>
+        ${currentRole==='admin'?`<button class="btn btn-red btn-xs" onclick="deleteCdoc(${d.id})">✕</button>`:''}
+      </div></td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="8" class="tbl-empty">لا توجد مستندات</td></tr>`;
+}
+
+// ===================== STATEMENTS =====================
+function populateStmtFilters() {
+  const coSel=document.getElementById('stmt-company-f');
+  const saved=coSel.value;
+  coSel.innerHTML='<option value="">كل الشركات</option>'+DB.companies.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  if(saved) coSel.value=saved;
+  const months=[...new Set(DB.companyDocs.map(d=>d.date.slice(0,7)))].sort().reverse();
+  const mSel=document.getElementById('stmt-month-f');
+  mSel.innerHTML='<option value="">كل الأشهر</option>'+months.map(m=>`<option value="${m}">${m}</option>`).join('');
+  if(!mSel.value&&months[0]) mSel.value=months[0];
+}
+function renderStatements() {
+  const coF=document.getElementById('stmt-company-f').value;
+  const mF=document.getElementById('stmt-month-f').value;
+  let companies = coF ? DB.companies.filter(c=>String(c.id)===coF) : DB.companies;
+  const monthNames = t('monthsMap');
+  const periodLabel = mF ? (monthNames[mF.split('-')[1]]||mF)+' '+mF.split('-')[0] : (currentLang==='ru'?'Все месяцы':'جميع الأشهر');
+  let html='';
+  companies.forEach(co=>{
+    let docs=DB.companyDocs.filter(d=>d.companyId===co.id);
+    if(mF) docs=docs.filter(d=>d.date.startsWith(mF));
+    if(!docs.length) return;
+    const totalDocs=docs.reduce((s,d)=>s+n(d.qty),0);
+    const totalAmt=docs.reduce((s,d)=>s+n(d.total),0);
+    const totalPaid=docs.reduce((s,d)=>s+n(d.paid),0);
+    const totalDebt=totalAmt-totalPaid;
+    html+=`<div class="tbox" style="margin-bottom:20px;" id="stmt-${co.id}">
+      <div style="padding:20px 24px;">
+        <div class="stmt-header">
+          <div class="stmt-logo-text">${DB.settings.officeName||'ГЛАГОЛ'}</div>
+          <div class="stmt-co">كشف حساب — ${co.name}</div>
+          <div class="stmt-period">الفترة: ${periodLabel}</div>
+        </div>
+        <div class="stmt-table-wrap" style="margin-top:16px;">
+          <table>
+            <thead><tr><th>التاريخ</th><th>عدد المستندات</th><th>سعر الوحدة</th><th>الإجمالي</th><th>المدفوع</th><th>الديون</th><th>ملاحظة</th></tr></thead>
+            <tbody>
+              ${docs.map(d=>`<tr>
+                <td>${d.date}</td><td style="text-align:center;font-weight:700;">${d.qty}</td>
+                <td>${fmt(d.unitPrice)}</td><td style="font-weight:600;">${fmt(d.total)}</td>
+                <td style="color:var(--green);">${fmt(d.paid)}</td>
+                <td style="color:${d.total-d.paid>0?'var(--red)':'var(--green)'};">${d.total-d.paid>0?fmt(d.total-d.paid):'✅'}</td>
+                <td style="font-size:11px;color:var(--ink3);">${d.note||'—'}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px;">
+          <div style="text-align:center;padding:12px;background:var(--surface2);border-radius:8px;">
+            <div style="font-size:20px;font-weight:800;">${totalDocs}</div><div style="font-size:11px;color:var(--ink3);">مستند</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--surface2);border-radius:8px;">
+            <div style="font-size:18px;font-weight:800;color:var(--accent);">${fmt(totalAmt)}</div><div style="font-size:11px;color:var(--ink3);">الإجمالي</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--green-light);border-radius:8px;">
+            <div style="font-size:18px;font-weight:800;color:var(--green);">${fmt(totalPaid)}</div><div style="font-size:11px;color:var(--ink3);">مدفوع</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:${totalDebt>0?'var(--red-light)':'var(--green-light)'};border-radius:8px;">
+            <div style="font-size:18px;font-weight:800;color:${totalDebt>0?'var(--red)':'var(--green)'};">${totalDebt>0?fmt(totalDebt):'✅ مسدد'}</div><div style="font-size:11px;color:var(--ink3);">الديون</div>
+          </div>
+        </div>
+        <div class="stmt-footer">مكتب ${DB.settings.officeName||'ГЛАГОЛ'} — ${DB.settings.officeAddr||''} — ${DB.settings.officePhone||''}</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('stmt-content').innerHTML=html||'<div style="text-align:center;padding:40px;color:var(--ink3);">لا توجد بيانات للعرض</div>';
+}
+function printStatement() { window.print(); }
+
+// ===================== FINANCE =====================
+function saveExpense() {
+  const amt=n(document.getElementById('ex-amount').value);
+  if(!amt){showToast('⚠️ أدخل المبلغ');return;}
+  DB.expenses.push({ id:tid(), type:document.getElementById('ex-type').value, amount:amt, date:document.getElementById('ex-date').value||today(), desc:document.getElementById('ex-desc').value });
+  save(); closeModal('modal-expense'); renderFinance(); showToast('✅ تم تسجيل المصروف');
+}
+function renderFinance() {
+  const income = DB.orders.reduce((s,o)=>s+n(o.paid),0) + DB.companyDocs.reduce((s,d)=>s+n(d.paid),0);
+  const pending = DB.orders.reduce((s,o)=>s+n(o.remaining),0) + DB.companyDocs.reduce((s,d)=>s+Math.max(0,n(d.total)-n(d.paid)),0);
+  const expenses = DB.expenses.reduce((s,e)=>s+n(e.amount),0);
+  const profit = income - expenses;
+  document.getElementById('fin-kpis').innerHTML=`
+    <div class="kcard green"><div class="kcard-icon">💵</div><div class="kcard-val green">${fmt(income)}</div><div class="kcard-lbl">إجمالي المحصّل</div></div>
+    <div class="kcard red"><div class="kcard-icon">⏳</div><div class="kcard-val red">${fmt(pending)}</div><div class="kcard-lbl">ديون لم تُحصّل</div></div>
+    <div class="kcard"><div class="kcard-icon">📤</div><div class="kcard-val">${fmt(expenses)}</div><div class="kcard-lbl">المصروفات</div></div>
+    <div class="kcard gold"><div class="kcard-icon">📈</div><div class="kcard-val gold">${fmt(profit)}</div><div class="kcard-lbl">صافي الربح</div></div>
+  `;
+  const allItems=[
+    ...DB.orders.map(o=>({date:o.date,entity:o.client,desc:o.service,total:o.price,paid:o.paid,debt:o.remaining,status:o.status,type:'order'})),
+    ...DB.companyDocs.map(d=>({date:d.date,entity:d.companyName,desc:`${d.qty} مستند`,total:d.total,paid:d.paid,debt:Math.max(0,d.total-d.paid),status:d.status,type:'cdoc'}))
+  ].sort((a,b)=>b.date.localeCompare(a.date));
+  const smap={new:'badge-new جديد',active:'badge-active جاري',done:'badge-done مكتمل',partial:'badge-partial جزئي',paid:'badge-paid مدفوع',unpaid:'badge-debt لم يُدفع'};
+  document.getElementById('fin-tbody').innerHTML=allItems.map(i=>{
+    const [sc,sl]=(smap[i.status]||'badge-new جديد').split(' ');
+    return `<tr>
+      <td>${i.date}</td><td style="font-weight:600;">${i.entity}</td><td style="font-size:12px;">${i.desc}</td>
+      <td style="font-weight:600;">${fmt(i.total)}</td>
+      <td style="color:var(--green);">${fmt(i.paid)}</td>
+      <td style="color:${i.debt>0?'var(--red)':'var(--green)'};">${i.debt>0?fmt(i.debt):'✅'}</td>
+      <td><span class="badge ${sc}">${sl}</span></td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="7" class="tbl-empty">لا توجد بيانات</td></tr>';
+  document.getElementById('exp-tbody').innerHTML=DB.expenses.length?
+    [...DB.expenses].reverse().map(e=>`<tr>
+      <td>${e.date}</td><td>${e.type}</td><td>${e.desc||'—'}</td>
+      <td style="color:var(--red);font-weight:600;">${fmt(e.amount)}</td>
+      <td>${currentRole==='admin'?`<button class="btn btn-red btn-xs" onclick="deleteExpense(${e.id})">✕</button>`:''}</td>
+    </tr>`).join(''):`<tr><td colspan="5" class="tbl-empty">لا توجد مصروفات</td></tr>`;
+}
+function deleteExpense(id){ DB.expenses=DB.expenses.filter(e=>e.id!==id);save();renderFinance();}
+
+// ===================== REPORTS =====================
+let currentReportTab='daily';
+function switchReportTab(tab,el) {
+  currentReportTab=tab;
+  document.querySelectorAll('#report-tabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const adv = document.getElementById('advanced-stats');
+  const rep = document.getElementById('report-content');
+  if(tab==='stats') {
+    adv.style.display='block'; rep.style.display='none';
+    renderAdvancedStats();
+  } else {
+    adv.style.display='none'; rep.style.display='';
+    renderReport(tab);
+  }
+}
+function renderReport(tab) {
+  const now=new Date(); const todayStr=today();
+  let html='';
+  if(tab==='daily') {
+    const todayOrders=DB.orders.filter(o=>o.date===todayStr);
+    const todayDocs=DB.companyDocs.filter(d=>d.date===todayStr);
+    const income=todayOrders.reduce((s,o)=>s+n(o.paid),0)+todayDocs.reduce((s,d)=>s+n(d.paid),0);
+    const newOrders=todayOrders.length+todayDocs.length;
+    html=`<div class="kpi-row cols3">
+      <div class="kcard"><div class="kcard-icon">📋</div><div class="kcard-val accent">${newOrders}</div><div class="kcard-lbl">طلبات اليوم</div></div>
+      <div class="kcard green"><div class="kcard-icon">💵</div><div class="kcard-val green">${fmt(income)}</div><div class="kcard-lbl">إيرادات اليوم</div></div>
+      <div class="kcard"><div class="kcard-icon">📄</div><div class="kcard-val">${todayDocs.reduce((s,d)=>s+n(d.qty),0)}</div><div class="kcard-lbl">مستندات شركات</div></div>
+    </div>
+    <div class="tbox"><div class="tbox-head"><div class="tbox-title">📋 طلبات اليوم</div></div>
+    <table class="tbl"><thead><tr><th>العميل</th><th>الخدمة</th><th>المبلغ</th><th>الحالة</th></tr></thead>
+    <tbody>${todayOrders.map(o=>`<tr><td>${o.client}</td><td>${o.service}</td><td>${fmt(o.price)}</td><td><span class="badge badge-active">-</span></td></tr>`).join('')||'<tr><td colspan="4" class="tbl-empty">لا توجد طلبات اليوم</td></tr>'}</tbody>
+    </table></div>`;
+  } else if(tab==='weekly') {
+    const days=[]; for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);days.push(d.toISOString().split('T')[0]);}
+    const weekIncome=days.map(d=>({
+      day:d, income:DB.orders.filter(o=>o.date===d).reduce((s,o)=>s+n(o.paid),0)+DB.companyDocs.filter(c=>c.date===d).reduce((s,c)=>s+n(c.paid),0),
+      orders:DB.orders.filter(o=>o.date===d).length
+    }));
+    const totalWeekIncome=weekIncome.reduce((s,d)=>s+d.income,0);
+    const wDays=t('days');
+    const wLbl1=currentLang==='ru'?'Выручка за неделю':'إيرادات الأسبوع';
+    const wLbl2=currentLang==='ru'?'Заказы за неделю':'طلبات الأسبوع';
+    const wTitle=currentLang==='ru'?'📊 Детали недели':'📊 تفصيل الأسبوع';
+    const wH=currentLang==='ru'?['День','Дата','Заказы','Выручка']:['اليوم','التاريخ','الطلبات','الإيرادات'];
+    html=`<div class="kpi-row cols2">
+      <div class="kcard green"><div class="kcard-icon">💵</div><div class="kcard-val green">${fmt(totalWeekIncome)}</div><div class="kcard-lbl">${wLbl1}</div></div>
+      <div class="kcard"><div class="kcard-icon">📋</div><div class="kcard-val accent">${weekIncome.reduce((s,d)=>s+d.orders,0)}</div><div class="kcard-lbl">${wLbl2}</div></div>
+    </div>
+    <div class="tbox"><div class="tbox-head"><div class="tbox-title">${wTitle}</div></div>
+    <table class="tbl"><thead><tr><th>${wH[0]}</th><th>${wH[1]}</th><th>${wH[2]}</th><th>${wH[3]}</th></tr></thead>
+    <tbody>${weekIncome.map(d=>`<tr><td>${wDays[new Date(d.day).getDay()]}</td><td>${d.day}</td><td>${d.orders}</td><td style="font-weight:600;color:var(--accent);">${fmt(d.income)}</td></tr>`).join('')}</tbody>
+    </table></div>`;
+  } else if(tab==='monthly') {
+    const year=now.getFullYear(); const month=String(now.getMonth()+1).padStart(2,'0');
+    const mStr=`${year}-${month}`;
+    const mOrders=DB.orders.filter(o=>o.date.startsWith(mStr));
+    const mDocs=DB.companyDocs.filter(d=>d.date.startsWith(mStr));
+    const mIncome=mOrders.reduce((s,o)=>s+n(o.paid),0)+mDocs.reduce((s,d)=>s+n(d.paid),0);
+    const mExpenses=DB.expenses.filter(e=>e.date.startsWith(mStr)).reduce((s,e)=>s+n(e.amount),0);
+    const mProfit=mIncome-mExpenses;
+    html=`<div class="kpi-row cols4">
+      <div class="kcard"><div class="kcard-icon">📋</div><div class="kcard-val accent">${mOrders.length+mDocs.length}</div><div class="kcard-lbl">إجمالي الطلبات</div></div>
+      <div class="kcard green"><div class="kcard-icon">💵</div><div class="kcard-val green">${fmt(mIncome)}</div><div class="kcard-lbl">الإيرادات</div></div>
+      <div class="kcard red"><div class="kcard-icon">📤</div><div class="kcard-val red">${fmt(mExpenses)}</div><div class="kcard-lbl">المصروفات</div></div>
+      <div class="kcard gold"><div class="kcard-icon">📈</div><div class="kcard-val gold">${fmt(mProfit)}</div><div class="kcard-lbl">صافي الربح</div></div>
+    </div>
+    <div class="tbox"><div class="tbox-head"><div class="tbox-title">🏢 إيرادات الشركات هذا الشهر</div></div>
+    <table class="tbl"><thead><tr><th>الشركة</th><th>المستندات</th><th>الإجمالي</th><th>المحصّل</th><th>الديون</th></tr></thead>
+    <tbody>${DB.companies.map(co=>{
+      const d=mDocs.filter(d=>d.companyId===co.id);
+      const totalAmt=d.reduce((s,x)=>s+n(x.total),0); if(!totalAmt)return '';
+      const paid=d.reduce((s,x)=>s+n(x.paid),0);
+      return `<tr><td style="font-weight:600;">${co.name}</td><td>${d.reduce((s,x)=>s+n(x.qty),0)}</td><td>${fmt(totalAmt)}</td><td style="color:var(--green);">${fmt(paid)}</td><td style="color:var(--red);">${fmt(totalAmt-paid)}</td></tr>`;
+    }).join('')||'<tr><td colspan="5" class="tbl-empty">لا توجد بيانات</td></tr>'}</tbody>
+    </table></div>`;
+  } else { // annual
+    const year=now.getFullYear();
+    const monthNums=['01','02','03','04','05','06','07','08','09','10','11','12'];
+    const mnames=t('months');
+    const annualData=monthNums.map((m,i)=>{
+      const mStr=`${year}-${m}`;
+      const inc=DB.orders.filter(o=>o.date.startsWith(mStr)).reduce((s,o)=>s+n(o.paid),0)+
+                DB.companyDocs.filter(d=>d.date.startsWith(mStr)).reduce((s,d)=>s+n(d.paid),0);
+      return {month:mnames[i],income:inc};
+    });
+    const totalAnnual=annualData.reduce((s,d)=>s+d.income,0);
+    const revLabel=currentLang==='ru'?`Выручка ${year}`:`إيرادات ${year}`;
+    const ordLabel=currentLang==='ru'?`Заказы ${year}`:`طلبات ${year}`;
+    const summaryLabel=currentLang==='ru'?`📅 Годовой итог ${year}`:`📅 الملخص السنوي ${year}`;
+    const monthLabel=currentLang==='ru'?'Месяц':'الشهر';
+    const incomeLabel=currentLang==='ru'?'Выручка':'الإيرادات';
+    html=`<div class="kpi-row cols2">
+      <div class="kcard gold"><div class="kcard-icon">🏆</div><div class="kcard-val gold">${fmt(totalAnnual)}</div><div class="kcard-lbl">${revLabel}</div></div>
+      <div class="kcard"><div class="kcard-icon">📋</div><div class="kcard-val">${DB.orders.filter(o=>o.date.startsWith(year)).length}</div><div class="kcard-lbl">${ordLabel}</div></div>
+    </div>
+    <div class="tbox"><div class="tbox-head"><div class="tbox-title">${summaryLabel}</div></div>
+    <table class="tbl"><thead><tr><th>${monthLabel}</th><th>${incomeLabel}</th></tr></thead>
+    <tbody>${annualData.map(d=>`<tr><td>${d.month}</td><td style="font-weight:700;color:${d.income>0?'var(--accent)':'var(--ink3)'};">${fmt(d.income)}</td></tr>`).join('')}</tbody>
+    </table></div>`;
+  }
+  document.getElementById('report-content').innerHTML=html;
+}
+
+// ===================== STAFF =====================
+function saveStaff() {
+  const name=document.getElementById('st-name').value.trim();
+  if(!name){showToast('⚠️ أدخل الاسم');return;}
+  DB.staff.push({id:tid(),name,role:document.getElementById('st-role').value,langs:document.getElementById('st-langs').value});
+  save(); closeModal('modal-staff'); renderStaff(); showToast('✅ تمت إضافة الموظف');
+}
+function deleteStaff(id){
+  if(!confirm('حذف الموظف؟'))return;
+  DB.staff=DB.staff.filter(s=>s.id!==id);save();renderStaff();
+}
+function renderStaff(){
+  const roles={admin:'👑 مدير',translator:'👤 مترجم',reception:'🗂️ استقبال'};
+  document.getElementById('staff-tbody').innerHTML=DB.staff.map(st=>{
+    const orders=DB.orders.filter(o=>o.staffId===st.id).length;
+    return `<tr>
+      <td style="font-weight:600;">${st.name}</td><td>${roles[st.role]||st.role}</td>
+      <td style="font-size:12px;">${st.langs||'—'}</td><td>${orders}</td>
+      <td><span class="badge badge-active">كامل</span></td>
+      <td>${currentRole==='admin'?`<button class="btn btn-red btn-xs" onclick="deleteStaff(${st.id})">✕</button>`:''}</td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="6" class="tbl-empty">لا توجد موظفين</td></tr>';
+  document.getElementById('perm-settings').innerHTML=`
+    <div style="margin-bottom:16px;">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+        <div style="padding:10px 16px;background:var(--surface2);font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);">الصلاحية</div>
+        <div style="padding:10px;text-align:center;background:var(--surface2);font-size:11px;font-weight:700;color:var(--accent);border-bottom:1px solid var(--border);">👑 مدير</div>
+        <div style="padding:10px;text-align:center;background:var(--surface2);font-size:11px;font-weight:700;color:var(--gold);border-bottom:1px solid var(--border);">🗂️ استقبال</div>
+        <div style="padding:10px;text-align:center;background:var(--surface2);font-size:11px;font-weight:700;color:var(--green);border-bottom:1px solid var(--border);">👤 مترجم</div>
+        ${[
+          ['إضافة طلبات جديدة', true, true, false],
+          ['تعديل الطلبات', true, true, false],
+          ['حذف الطلبات والسجلات', true, false, false],
+          ['رؤية الأرباح والتكاليف', true, false, false],
+          ['إدارة الشركات والمستندات', true, true, false],
+          ['التقارير المالية', true, false, false],
+          ['إدارة الموظفين', true, false, false],
+          ['تغيير الإعدادات', true, false, false],
+          ['رؤية طلباته فقط', false, false, true],
+        ].map(([label,...vals])=>`
+          <div style="padding:10px 16px;font-size:13px;border-bottom:1px solid var(--border);">${label}</div>
+          ${vals.map(v=>`<div style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-size:16px;">${v?'✅':'—'}</div>`).join('')}
+        `).join('')}
+      </div>
+    </div>
+    <div class="fg"><label>كلمة مرور الاستقبال الجديدة</label>
+      <div style="display:flex;gap:8px;">
+        <input type="password" id="new-recep-pass" placeholder="recep123" style="flex:1;">
+        <button class="btn btn-outline btn-sm" onclick="saveReceptionPass()">حفظ</button>
+      </div>
+    </div>
+  `;
+}
+
+// ===================== DASHBOARD =====================
+function renderDashboard() {
+  const todayStr = today();
+  const now = new Date();
+
+  // --- TODAY STATS ---
+  const todayOrders = DB.orders.filter(o=>o.date===todayStr);
+  const todayIncome = todayOrders.reduce((s,o)=>s+n(o.paid),0) + DB.companyDocs.filter(d=>d.date===todayStr).reduce((s,d)=>s+n(d.paid),0);
+  const newToday = todayOrders.filter(o=>(o.workflow||'new')==='new').length;
+  const inProgress = DB.orders.filter(o=>['translate','review','notary'].includes(o.workflow||'')).length;
+  const readyToday = DB.orders.filter(o=>(o.workflow||'')==='ready').length;
+  const overdueOrders = DB.orders.filter(o=>{
+    if(!o.date||(o.workflow||'new')==='delivered'||(o.workflow||'new')==='cancelled') return false;
+    const daysDiff = Math.floor((new Date()-new Date(o.date))/(1000*60*60*24));
+    return daysDiff>3 && (o.workflow||'new')!=='delivered';
+  }).length;
+
+  const todayLbl = currentLang==='ru' ? ['Заказов сегодня','Выручка сегодня','В работе','Готово к выдаче','Просрочено'] :
+                                         ['طلبات اليوم','إيرادات اليوم','قيد التنفيذ','جاهز للتسليم','متأخرة'];
+  document.getElementById('dash-today').innerHTML = `
+    <div class="today-card tc-blue" onclick="nav('orders',null)">
+      <div class="today-num">${todayOrders.length}</div><div class="today-lbl">${todayLbl[0]}</div>
+    </div>
+    <div class="today-card tc-green">
+      <div class="today-num" style="font-size:20px;">${fmt(todayIncome)}</div><div class="today-lbl">${todayLbl[1]}</div>
+    </div>
+    <div class="today-card tc-orange" onclick="nav('orders',null)">
+      <div class="today-num">${inProgress}</div><div class="today-lbl">${todayLbl[2]}</div>
+    </div>
+    <div class="today-card tc-purple" onclick="nav('orders',null)">
+      <div class="today-num">${readyToday}</div><div class="today-lbl">${todayLbl[3]}</div>
+    </div>
+    <div class="today-card tc-red" onclick="nav('orders',null)">
+      <div class="today-num">${overdueOrders}</div><div class="today-lbl">${todayLbl[4]}</div>
+    </div>
+  `;
+
+  // --- PROFIT METER ---
+  const totalIncome=DB.orders.reduce((s,o)=>s+n(o.paid),0)+DB.companyDocs.reduce((s,d)=>s+n(d.paid),0);
+  const totalExpenses=DB.expenses.reduce((s,e)=>s+n(e.amount),0);
+  const totalNetProfit = DB.orders.reduce((s,o)=>s+n(o.netProfit||0),0);
+  const totalDebt=DB.orders.reduce((s,o)=>s+n(o.remaining),0)+DB.companyDocs.reduce((s,d)=>s+Math.max(0,n(d.total)-n(d.paid)),0);
+
+  // Month profit
+  const mStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const monthIncome = DB.orders.filter(o=>o.date.startsWith(mStr)).reduce((s,o)=>s+n(o.paid),0) +
+                      DB.companyDocs.filter(d=>d.date.startsWith(mStr)).reduce((s,d)=>s+n(d.paid),0);
+  const monthExp = DB.expenses.filter(e=>e.date&&e.date.startsWith(mStr)).reduce((s,e)=>s+n(e.amount),0);
+
+  const pmLabels = currentLang==='ru'
+    ? {title:'ПРИБЫЛЬ ВСЕГО',sub:'Чистая прибыль от заказов',r1:'Получено',r2:'Расходы',r3:'Долги'}
+    : {title:'إجمالي الأرباح',sub:'صافي ربح الطلبات',r1:'المحصّل',r2:'المصروفات',r3:'الديون'};
+
+  document.getElementById('dash-profit-meter').innerHTML = `
+    <div class="profit-meter">
+      <div class="pm-title">${pmLabels.title}</div>
+      <div class="pm-val">${fmt(totalNetProfit)}</div>
+      <div class="pm-sub">${pmLabels.sub}</div>
+      <div class="pm-grid">
+        <div class="pm-item green"><div class="pm-item-val">${fmt(totalIncome)}</div><div class="pm-item-lbl">${pmLabels.r1}</div></div>
+        <div class="pm-item red"><div class="pm-item-val">${fmt(totalExpenses)}</div><div class="pm-item-lbl">${pmLabels.r2}</div></div>
+        <div class="pm-item gold"><div class="pm-item-val">${fmt(totalDebt)}</div><div class="pm-item-lbl">${pmLabels.r3}</div></div>
+      </div>
+    </div>
+  `;
+
+  // --- WEEK CHART ---
+  const daysShort=t('daysShort');
+  const days=[]; for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);days.push(d);}
+  const dayData=days.map(d=>{
+    const ds=d.toISOString().split('T')[0];
+    return {lbl:daysShort[d.getDay()],val:DB.orders.filter(o=>o.date===ds).reduce((s,o)=>s+n(o.paid),0)+DB.companyDocs.filter(c=>c.date===ds).reduce((s,c)=>s+n(c.paid),0)};
+  });
+  const maxV=Math.max(...dayData.map(d=>d.val),1);
+  document.getElementById('weekChart').innerHTML=dayData.map(d=>`<div class="bar-col"><div class="bar" style="height:${Math.max(4,(d.val/maxV)*90)}px" title="${fmt(d.val)}"></div></div>`).join('');
+  document.getElementById('weekLabels').innerHTML=dayData.map(d=>`<div style="flex:1;text-align:center;font-size:10px;color:var(--ink3);">${d.lbl}</div>`).join('');
+
+  // --- KPI ---
+  document.getElementById('dash-kpis').innerHTML=`
+    <div class="kcard"><div class="kcard-icon">📋</div><div class="kcard-val accent">${DB.orders.length}</div><div class="kcard-lbl">${t('totalOrders')}</div></div>
+    <div class="kcard green"><div class="kcard-icon">💵</div><div class="kcard-val green">${fmt(totalIncome)}</div><div class="kcard-lbl">${t('totalIncome')}</div></div>
+    <div class="kcard red"><div class="kcard-icon">⚠️</div><div class="kcard-val red">${fmt(totalDebt)}</div><div class="kcard-lbl">${t('debts')}</div></div>
+    <div class="kcard gold"><div class="kcard-icon">📈</div><div class="kcard-val gold">${fmt(monthIncome-monthExp)}</div><div class="kcard-lbl">${currentLang==='ru'?'Прибыль месяца':'ربح الشهر'}</div></div>
+  `;
+
+  // --- DEBTS ---
+  const debtCos=DB.companies.map(co=>({...co,...getCompanyStats(co.id)})).filter(c=>c.totalDebt>0);
+  document.getElementById('dash-debts').innerHTML=debtCos.length?debtCos.slice(0,5).map(co=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 16px;border-bottom:1px solid var(--border);">
+      <div style="font-size:13px;font-weight:600;">${co.name}</div>
+      <span class="badge badge-debt">${fmt(co.totalDebt)}</span>
+    </div>`).join(''):`<div style="text-align:center;padding:20px;color:var(--ink3);font-size:13px;">${t('noDebts')}</div>`;
+
+  // --- RECENT ORDERS ---
+  const recent=[...DB.orders].reverse().slice(0,6);
+  document.getElementById('dash-recent').innerHTML=`<table class="tbl"><tbody>${
+    recent.map(o=>`<tr>
+      <td><span class="order-id-badge">${o.orderRef||('#'+o.id)}</span></td>
+      <td style="font-weight:600;">${o.client}</td>
+      <td style="font-size:12px;color:var(--ink3);">${o.service.slice(0,35)}${o.service.length>35?'…':''}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-weight:700;">${fmt(o.price)}</td>
+      <td>${wfBadge(o.workflow||'new')}</td>
+    </tr>`).join('')
+    ||'<tr><td colspan="5" class="tbl-empty">لا توجد طلبات</td></tr>'
+  }</tbody></table>`;
+}
+
+// ===================== NAV BADGES =====================
+function updateNavBadges() {
+  const pending=DB.orders.filter(o=>o.status==='new'||o.status==='active').length;
+  document.getElementById('nb-orders').textContent=pending||'';
+  const debts=DB.companies.filter(co=>getCompanyStats(co.id).totalDebt>0).length;
+  document.getElementById('nb-debts').textContent=debts||'';
+}
+
+// ===================== SETTINGS =====================
+const COLORS=['#2c4a6e','#1a6b3a','#7b2c2c','#5a2d82','#1a5f7a','#8b5e3c','#2d5a2d','#3a3a5c'];
+function loadSettings() {
+  document.getElementById('s-office-name').value=DB.settings.officeName||'ГЛАГОЛ';
+  document.getElementById('s-office-addr').value=DB.settings.officeAddr||'';
+  document.getElementById('s-office-phone').value=DB.settings.officePhone||'';
+  document.getElementById('colorPalette').innerHTML=COLORS.map(c=>`<div class="color-btn ${c===DB.settings.accentColor?'active':''}" style="background:${c}" onclick="setAccentColor('${c}',this)"></div>`).join('');
+}
+function setAccentColor(c,el) {
+  DB.settings.accentColor=c; save();
+  document.documentElement.style.setProperty('--accent',c);
+  document.querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  showToast('✅ تم تغيير اللون');
+}
+function setTheme(t) { DB.settings.theme=t; save(); applyTheme(); }
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme',DB.settings.theme||'light');
+  if(DB.settings.accentColor) document.documentElement.style.setProperty('--accent',DB.settings.accentColor);
+}
+function toggleTheme() { setTheme(DB.settings.theme==='dark'?'light':'dark'); }
+
+function exportData() {
+  const a=document.createElement('a');
+  a.href='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(DB,null,2));
+  a.download='glagol-backup-'+today()+'.json'; a.click();
+}
+function importData(inp) {
+  const file=inp.files[0]; if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{try{DB=JSON.parse(e.target.result);save();location.reload();}catch{showToast('❌ خطأ في الملف');}};
+  r.readAsText(file);
+}
+
+// ===================== TOAST =====================
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ===================== DATE =====================
+// ===================== LANGUAGE =====================
+let currentLang = 'ar';
+const TRANSLATIONS = {
+  ar: {
+    // Nav
+    navMain: 'الرئيسية', navDashboard: 'لوحة التحكم', navOrders: 'طلبات العملاء',
+    navServices: 'الخدمات / Услуги', navServicesList: 'قائمة الخدمات',
+    navCompanies: 'الشركات', navManageCompanies: 'إدارة الشركات',
+    navCompanyDocs: 'مستندات الشركات', navStatements: 'كشوفات الحساب',
+    navFinance: 'المالية', navAccounts: 'الحسابات العامة',
+    navReports: 'التقارير والجرد', navAdmin: 'الإدارة',
+    navStaff: 'الموظفون', navSettings: 'الإعدادات',
+    // Dashboard
+    dashTitle: 'لوحة', dashTitle2: 'التحكم',
+    newOrder: '+ طلب جديد', newDoc: '+ مستند شركة',
+    weeklyRevenue: '📊 الإيرادات (7 أيام)', companyDebts: '🏢 ديون الشركات',
+    viewBtn: 'عرض', recentOrders: '🕐 آخر الطلبات', viewAll: 'عرض الكل',
+    todayNotes: '📌 ملاحظات اليوم', notesPlaceholder: 'اكتب ملاحظات اليوم...',
+    noDebts: '✅ لا توجد ديون',
+    // KPI
+    totalOrders: 'إجمالي الطلبات', totalIncome: 'المحصّل',
+    debts: 'ديون', netProfit: 'ربح صافي',
+    // Orders Page
+    ordersTitle: 'طلبات', ordersTitle2: 'العملاء',
+    searchPlaceholder: '🔍  بحث بالاسم أو الرقم...',
+    allStatuses: 'كل الحالات', statusNew: 'جديد', statusActive: 'جاري',
+    statusDone: 'مكتمل', statusPartial: 'مدفوع جزئياً', statusCancelled: 'ملغي',
+    colDate: 'التاريخ', colClient: 'العميل', colService: 'الخدمة',
+    colPrice: 'السعر', colDeposit: 'الحجز', colPaid: 'المدفوع',
+    colRemaining: 'المتبقي', colProfit: 'ربح', colStatus: 'الحالة', colActions: 'إجراءات',
+    noOrders: 'لا توجد طلبات',
+    // Modals
+    modalNewOrder: 'طلب جديد', modalEditOrder: 'تعديل الطلب',
+    clientData: '👤 بيانات العميل', clientName: 'اسم العميل *',
+    clientPhone: 'رقم الهاتف', nationality: 'الجنسية',
+    orderDate: 'التاريخ', staff: 'الموظف',
+    deposit: 'مبلغ الحجز ₽', priority: 'الأولوية',
+    notes: 'ملاحظات', normalPriority: 'عادي', urgentPriority: 'عاجل', lowPriority: 'منخفضة',
+    orderedServices: '📋 الخدمات المطلوبة', addService: '+ إضافة خدمة',
+    orderSummary: '📊 ملخص الطلب', totalLabel: 'إجمالي', costsLabel: 'تكاليف', netProfitLabel: 'ربح صافي',
+    paidLabel: 'المدفوع', remainingLabel: 'المتبقي',
+    saveOrder: '💾 حفظ الطلب', cancel: 'إلغاء',
+    // Services
+    servicesTitle: 'قائمة الخدمات', servicesTitle2: 'والأسعار',
+    addServiceBtn: '+ إضافة خدمة', searchServices: '🔍 بحث...',
+    allCategories: 'كل الفئات', noServices: 'لا توجد خدمات',
+    // Companies
+    companiesTitle: 'إدارة', companiesTitle2: 'الشركات', addCompany: '+ شركة جديدة',
+    colCompanyName: 'اسم الشركة', colContact: 'جهة الاتصال', colUnitPrice: 'سعر المستند',
+    colTotalDocs: 'إجمالي المستندات', colTotalAmount: 'المبلغ المستحق',
+    colTotalPaid: 'المدفوع', colDebt: 'الديون',
+    noCompanies: 'لا توجد شركات', noDebt: '✅ لا ديون',
+    // Statements
+    statementsTitle: 'كشوفات', statementsTitle2: 'الحساب',
+    allCompanies: 'كل الشركات', allMonths: 'كل الأشهر',
+    printPDF: '🖨️ طباعة / PDF',
+    // Finance
+    financeTitle: 'الحسابات', financeTitle2: 'العامة', addExpense: '+ مصروف',
+    orderFinancialLog: '📋 سجل الطلبات المالي', expensesLog: '📤 سجل المصروفات',
+    addExpenseBtn: '+ إضافة',
+    colClientCompany: 'العميل / الشركة', colAmount: 'المبلغ',
+    // Reports
+    reportsTitle: 'التقارير', reportsTitle2: 'والجرد',
+    dailyTab: 'جرد يومي', weeklyTab: 'جرد أسبوعي', monthlyTab: 'جرد شهري', annualTab: 'السنوي',
+    // Staff
+    staffTitle: 'إدارة', staffTitle2: 'الموظفين', addStaff: '+ موظف جديد',
+    colName: 'الاسم', colRole: 'الدور', colLangs: 'اللغات', colCompleted: 'الطلبات المنجزة',
+    colPermissions: 'الصلاحيات',
+    permSettings: '🔐 إعدادات الصلاحيات',
+    permReports: 'رؤية التقارير المالية', permReportsDesc: 'السماح للموظفين برؤية التقارير والأرقام',
+    permEdit: 'تعديل الطلبات', permEditDesc: 'السماح بتعديل وإضافة طلبات',
+    permDelete: 'حذف السجلات', permDeleteDesc: 'حذف الطلبات والسجلات (للمدير فقط)',
+    // Settings
+    settingsTitle: 'إعدادات', settingsTitle2: 'النظام',
+    colorsTheme: '🎨 الألوان والمظهر', mainColor: 'اللون الرئيسي للنظام',
+    displayMode: 'وضع العرض', lightMode: '☀️ فاتح', darkMode: '🌙 داكن',
+    changePass: '🔑 تغيير كلمات المرور',
+    adminPass: 'كلمة مرور المدير الجديدة', staffPass: 'كلمة مرور الموظف الجديدة',
+    saveBtn: '💾 حفظ', officeData: '🏢 بيانات المكتب', officeName: 'اسم المكتب',
+    officeAddr: 'العنوان', officePhone: 'الهاتف',
+    backup: '💾 النسخ الاحتياطي',
+    exportData: '📥 تصدير جميع البيانات (JSON)', importData: 'استيراد بيانات',
+    // Login
+    loginTitle: 'نظام إدارة مكتب الترجمة والتصديق',
+    loginPassword: 'كلمة المرور', loginBtn: '🔐 دخول',
+    loginError: '❌ كلمة المرور غير صحيحة',
+    roleAdmin: '👑 مدير', roleStaff: '👤 موظف',
+    userAdmin: '👑 مدير', userStaff: '👤 موظف',
+    // Status badges
+    badgeNew: 'جديد', badgeActive: 'جاري', badgeDone: 'مكتمل',
+    badgePartial: 'جزئي', badgeCancelled: 'ملغي',
+    // Day names
+    days: ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],
+    daysShort: ['أح','اث','ثل','أر','خم','جم','سب'],
+    months: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],
+    monthsMap: {'01':'يناير','02':'فبراير','03':'مارس','04':'أبريل','05':'مايو','06':'يونيو','07':'يوليو','08':'أغسطس','09':'سبتمبر','10':'أكتوبر','11':'نوفمبر','12':'ديسمبر'},
+  },
+  ru: {
+    navMain: 'ГЛАВНАЯ', navDashboard: 'Главная панель', navOrders: 'Заказы клиентов',
+    navServices: 'Услуги', navServicesList: 'Список услуг',
+    navCompanies: 'Компании', navManageCompanies: 'Управление компаниями',
+    navCompanyDocs: 'Документы компаний', navStatements: 'Акты сверки',
+    navFinance: 'ФИНАНСЫ', navAccounts: 'Общие счета',
+    navReports: 'Отчёты и инвентаризация', navAdmin: 'УПРАВЛЕНИЕ',
+    navStaff: 'Сотрудники', navSettings: 'Настройки',
+    dashTitle: 'Главная', dashTitle2: 'панель',
+    newOrder: '+ Новый заказ', newDoc: '+ Документ компании',
+    weeklyRevenue: '📊 Выручка (7 дней)', companyDebts: '🏢 Долги компаний',
+    viewBtn: 'Смотреть', recentOrders: '🕐 Последние заказы', viewAll: 'Все заказы',
+    todayNotes: '📌 Заметки дня', notesPlaceholder: 'Заметки на сегодня...',
+    noDebts: '✅ Долгов нет',
+    totalOrders: 'Всего заказов', totalIncome: 'Получено',
+    debts: 'Долги', netProfit: 'Чистая прибыль',
+    ordersTitle: 'Заказы', ordersTitle2: 'клиентов',
+    searchPlaceholder: '🔍  Поиск по имени или номеру...',
+    allStatuses: 'Все статусы', statusNew: 'Новый', statusActive: 'В работе',
+    statusDone: 'Готово', statusPartial: 'Частично оплачен', statusCancelled: 'Отменён',
+    colDate: 'Дата', colClient: 'Клиент', colService: 'Услуга',
+    colPrice: 'Цена', colDeposit: 'Задаток', colPaid: 'Оплачено',
+    colRemaining: 'Остаток', colProfit: 'Прибыль', colStatus: 'Статус', colActions: 'Действия',
+    noOrders: 'Нет заказов',
+    modalNewOrder: 'Новый заказ', modalEditOrder: 'Редактировать заказ',
+    clientData: '👤 Данные клиента', clientName: 'Имя клиента *',
+    clientPhone: 'Телефон', nationality: 'Гражданство',
+    orderDate: 'Дата', staff: 'Сотрудник',
+    deposit: 'Задаток ₽', priority: 'Приоритет',
+    notes: 'Примечания', normalPriority: 'Обычный', urgentPriority: 'Срочный', lowPriority: 'Низкий',
+    orderedServices: '📋 Услуги', addService: '+ Добавить услугу',
+    orderSummary: '📊 Итоги заказа', totalLabel: 'Итого', costsLabel: 'Расходы', netProfitLabel: 'Чистая прибыль',
+    paidLabel: 'Оплачено', remainingLabel: 'Остаток',
+    saveOrder: '💾 Сохранить заказ', cancel: 'Отмена',
+    servicesTitle: 'Список услуг', servicesTitle2: 'и цен',
+    addServiceBtn: '+ Добавить услугу', searchServices: '🔍 Поиск...',
+    allCategories: 'Все категории', noServices: 'Нет услуг',
+    companiesTitle: 'Управление', companiesTitle2: 'компаниями', addCompany: '+ Новая компания',
+    colCompanyName: 'Название компании', colContact: 'Контакт', colUnitPrice: 'Цена документа',
+    colTotalDocs: 'Всего документов', colTotalAmount: 'Сумма',
+    colTotalPaid: 'Оплачено', colDebt: 'Долги',
+    noCompanies: 'Нет компаний', noDebt: '✅ Долгов нет',
+    statementsTitle: 'Акты', statementsTitle2: 'сверки',
+    allCompanies: 'Все компании', allMonths: 'Все месяцы',
+    printPDF: '🖨️ Печать / PDF',
+    financeTitle: 'Финансы', financeTitle2: '', addExpense: '+ Расход',
+    orderFinancialLog: '📋 Финансовый журнал', expensesLog: '📤 Журнал расходов',
+    addExpenseBtn: '+ Добавить',
+    colClientCompany: 'Клиент / Компания', colAmount: 'Сумма',
+    reportsTitle: 'Отчёты', reportsTitle2: 'и инвентаризация',
+    dailyTab: 'Дневной', weeklyTab: 'Недельный', monthlyTab: 'Месячный', annualTab: 'Годовой',
+    staffTitle: 'Управление', staffTitle2: 'сотрудниками', addStaff: '+ Новый сотрудник',
+    colName: 'Имя', colRole: 'Роль', colLangs: 'Языки', colCompleted: 'Выполненные заказы',
+    colPermissions: 'Разрешения',
+    permSettings: '🔐 Настройки разрешений',
+    permReports: 'Просмотр финансовых отчётов', permReportsDesc: 'Разрешить сотрудникам просматривать отчёты',
+    permEdit: 'Редактирование заказов', permEditDesc: 'Разрешить добавлять и редактировать заказы',
+    permDelete: 'Удаление записей', permDeleteDesc: 'Удаление заказов (только менеджер)',
+    settingsTitle: 'Настройки', settingsTitle2: 'системы',
+    colorsTheme: '🎨 Цвета и тема', mainColor: 'Основной цвет системы',
+    displayMode: 'Режим отображения', lightMode: '☀️ Светлый', darkMode: '🌙 Тёмный',
+    changePass: '🔑 Изменить пароли',
+    adminPass: 'Новый пароль менеджера', staffPass: 'Новый пароль сотрудника',
+    saveBtn: '💾 Сохранить', officeData: '🏢 Данные офиса', officeName: 'Название офиса',
+    officeAddr: 'Адрес', officePhone: 'Телефон',
+    backup: '💾 Резервное копирование',
+    exportData: '📥 Экспорт данных (JSON)', importData: 'Импорт данных',
+    loginTitle: 'Система управления бюро переводов',
+    loginPassword: 'Пароль', loginBtn: '🔐 Войти',
+    loginError: '❌ Неверный пароль',
+    roleAdmin: '👑 Менеджер', roleStaff: '👤 Сотрудник',
+    userAdmin: '👑 Менеджер', userStaff: '👤 Сотрудник',
+    badgeNew: 'Новый', badgeActive: 'В работе', badgeDone: 'Готово',
+    badgePartial: 'Частично', badgeCancelled: 'Отменён',
+    days: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+    daysShort: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+    months: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+    monthsMap: {'01':'Январь','02':'Февраль','03':'Март','04':'Апрель','05':'Май','06':'Июнь','07':'Июль','08':'Август','09':'Сентябрь','10':'Октябрь','11':'Ноябрь','12':'Декабрь'},
+  }
+};
+function t(key) { return TRANSLATIONS[currentLang][key] || TRANSLATIONS['ar'][key] || key; }
+
+function applyLang() {
+  const isRu = currentLang === 'ru';
+  const dir = isRu ? 'ltr' : 'rtl';
+  const lang = isRu ? 'ru' : 'ar';
+  document.documentElement.setAttribute('lang', lang);
+  document.documentElement.setAttribute('dir', dir);
+
+  // Nav labels
+  safeText('nav-label-main', t('navMain'));
+  safeText('nav-item-dashboard', t('navDashboard'));
+  safeText('nav-item-orders', t('navOrders'));
+  safeText('nav-label-services', t('navServices'));
+  safeText('nav-item-services', t('navServicesList'));
+  safeText('nav-label-companies', t('navCompanies'));
+  safeText('nav-item-companies', t('navManageCompanies'));
+  safeText('nav-item-company-docs', t('navCompanyDocs'));
+  safeText('nav-item-statements', t('navStatements'));
+  safeText('nav-label-finance', t('navFinance'));
+  safeText('nav-item-finance', t('navAccounts'));
+  safeText('nav-item-reports', t('navReports'));
+  safeText('nav-label-admin', t('navAdmin'));
+  safeText('nav-item-staff', t('navStaff'));
+  safeText('nav-item-settings', t('navSettings'));
+
+  // Dashboard
+  safeText('dash-title-1', t('dashTitle'));
+  safeText('dash-title-2', t('dashTitle2'));
+  safeText('btn-new-order', t('newOrder'));
+  safeText('btn-new-doc', t('newDoc'));
+  safeText('dash-weekly-title', t('weeklyRevenue'));
+  safeText('dash-debts-title', t('companyDebts'));
+  safeText('btn-view-debts', t('viewBtn'));
+  safeText('dash-recent-title', t('recentOrders'));
+  safeText('btn-view-all-orders', t('viewAll'));
+  safeText('dash-notes-title', t('todayNotes'));
+  const notesTA = document.getElementById('dashNotes');
+  if(notesTA) notesTA.placeholder = t('notesPlaceholder');
+
+  // Orders page
+  safeText('orders-title-1', t('ordersTitle'));
+  safeText('orders-title-2', t('ordersTitle2'));
+  safeText('btn-add-order', t('newOrder'));
+  const searchInp = document.querySelector('.search-inp');
+  if(searchInp) searchInp.placeholder = t('searchPlaceholder');
+
+  // Settings page
+  safeText('settings-title-1', t('settingsTitle'));
+  safeText('settings-title-2', t('settingsTitle2'));
+
+  // Reports tabs
+  safeText('tab-daily', t('dailyTab'));
+  safeText('tab-weekly', t('weeklyTab'));
+  safeText('tab-monthly', t('monthlyTab'));
+  safeText('tab-annual', t('annualTab'));
+
+  // Toolbar
+  safeText('lang-btn', isRu ? 'RU' : 'AR');
+
+  // Re-render everything
+  renderDashboard();
+  updateNavBadges();
+  updateDate();
+}
+
+function safeText(id, text) {
+  const el = document.getElementById(id);
+  if(el) {
+    // preserve badges inside nav items
+    const badge = el.querySelector('.nav-badge');
+    el.textContent = text;
+    if(badge) el.appendChild(badge);
+  }
+}
+
+function toggleLang() {
+  currentLang = currentLang==='ar' ? 'ru' : 'ar';
+  applyLang();
+  showToast(currentLang==='ar' ? '🇸🇦 تم التحويل للعربية' : '🇷🇺 Переключено на русский');
+}
+
+function updateDate() {
+  const days = t('days');
+  const months = t('months');
+  const d=new Date();
+  document.getElementById('tbDate').textContent=days[d.getDay()]+' '+d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();
+}
+
+// ===================== INVOICE GENERATOR (PREMIUM) =====================
+function generateInvoice(orderId, lang='both') {
+  const o = DB.orders.find(x=>x.id===orderId);
+  if(!o) return;
+  const officeName = DB.settings.officeName || 'ГЛАГОЛ PRO';
+  const officeAddr = DB.settings.officeAddr || 'Москва, РУДН';
+  const officePhone = DB.settings.officePhone || '';
+  const accentColor = DB.settings.accentColor || '#1e40af';
+  const invNum = o.orderRef || ('#'+o.id);
+  const itemRows = (o.items||[{serviceName:o.service,price:o.price}]).map((it,i)=>`
+    <tr>
+      <td style="text-align:center;color:#888;font-size:12px;">${i+1}</td>
+      <td>${it.serviceName||'—'}</td>
+      <td style="text-align:center;color:#888;font-size:12px;">1</td>
+      <td style="text-align:left;font-weight:700;font-family:monospace;color:${accentColor};">${n(it.price).toLocaleString('ru-RU')} ₽</td>
+    </tr>`).join('');
+  const wfStep = getWfStep(o.workflow||'new');
+  const statusAr = wfStep.ar;
+  const statusRu = wfStep.ru;
+
+  const html = `<!DOCTYPE html>
+<html dir="rtl">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=IBM+Plex+Mono:wght@600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Tajawal',sans-serif; background:#f4f6fb; color:#111; padding:30px; min-height:100vh; }
+  .page { background:white; max-width:720px; margin:0 auto; border-radius:16px; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,0.1); }
+  .header { background:linear-gradient(135deg,${accentColor} 0%,${accentColor}dd 100%); color:white; padding:32px 36px; position:relative; }
+  .header::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:40px; background:white; clip-path:ellipse(55% 100% at 50% 100%); }
+  .logo { font-family:'IBM Plex Mono',monospace; font-size:32px; font-weight:700; letter-spacing:6px; margin-bottom:4px; }
+  .header-sub { font-size:12px; opacity:0.75; letter-spacing:0.5px; }
+  .inv-num { position:absolute; top:32px; left:36px; text-align:left; }
+  .inv-num .lbl { font-size:10px; opacity:0.6; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+  .inv-num .val { font-family:'IBM Plex Mono',monospace; font-size:18px; font-weight:700; background:rgba(255,255,255,0.2); padding:4px 12px; border-radius:8px; }
+  .body { padding:36px; }
+  .section-title { font-size:10px; font-weight:700; color:${accentColor}; text-transform:uppercase; letter-spacing:2px; margin-bottom:12px; }
+  .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:28px; }
+  .info-box { background:#f7f9fc; border-radius:10px; padding:14px 16px; }
+  .info-box .lbl { font-size:10px; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:3px; }
+  .info-box .val { font-size:14px; font-weight:700; color:#111; }
+  .info-box .val2 { font-size:12px; color:#666; margin-top:2px; }
+  table { width:100%; border-collapse:collapse; margin-bottom:24px; }
+  thead tr { background:${accentColor}; color:white; }
+  thead th { padding:11px 14px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+  tbody tr { border-bottom:1px solid #f0f0f0; }
+  tbody tr:hover { background:#fafbff; }
+  tbody td { padding:12px 14px; font-size:13px; }
+  .totals-box { background:#f7f9fc; border-radius:12px; padding:20px 24px; }
+  .total-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; font-size:13px; }
+  .total-row .lbl { color:#666; }
+  .total-row .val { font-family:'IBM Plex Mono',monospace; font-weight:700; }
+  .total-row.big { padding-top:12px; margin-top:6px; border-top:2px solid ${accentColor}; }
+  .total-row.big .lbl { font-size:15px; font-weight:800; color:#111; }
+  .total-row.big .val { font-size:20px; color:${accentColor}; }
+  .paid-badge { display:inline-block; background:#d1fae5; color:#065f46; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700; margin-top:8px; }
+  .debt-badge { display:inline-block; background:#fee2e2; color:#991b1b; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700; margin-top:8px; }
+  .status-row { display:flex; align-items:center; gap:8px; margin-top:8px; }
+  .wf-dot { width:10px; height:10px; border-radius:50%; background:${accentColor}; }
+  .footer { background:#f7f9fc; padding:20px 36px; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center; margin-top:0; }
+  .footer-brand { font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:14px; color:${accentColor}; letter-spacing:3px; }
+  .footer-info { font-size:11px; color:#999; text-align:left; line-height:1.8; }
+  .divider { height:1px; background:#eee; margin:20px 0; }
+  .stamp { position:absolute; bottom:100px; left:60px; width:80px; height:80px; border:3px solid rgba(0,0,0,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; color:rgba(0,0,0,0.2); font-weight:700; text-align:center; line-height:1.4; transform:rotate(-15deg); }
+  @media print {
+    body { background:white; padding:0; }
+    .page { box-shadow:none; border-radius:0; }
+    .print-btn { display:none; }
+  }
+  .print-btn { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:${accentColor}; color:white; border:none; padding:12px 32px; border-radius:12px; font-family:Tajawal,sans-serif; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.2); letter-spacing:0.5px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="logo">${officeName}</div>
+    <div class="header-sub">Бюро переводов и нотариального заверения &nbsp;·&nbsp; مكتب الترجمة والتصديق</div>
+    <div class="inv-num">
+      <div class="lbl">Счёт / فاتورة</div>
+      <div class="val">${invNum}</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="info-grid">
+      <div>
+        <div class="section-title">Клиент / العميل</div>
+        <div class="info-box">
+          <div class="val">${o.client}</div>
+          <div class="val2">${o.phone||'—'}</div>
+          <div class="val2">${o.nationality||''}</div>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">Детали / التفاصيل</div>
+        <div class="info-box">
+          <div class="lbl">Дата / التاريخ</div>
+          <div class="val">${o.date}</div>
+          <div class="lbl" style="margin-top:6px;">Статус / الحالة</div>
+          <div class="status-row"><div class="wf-dot"></div><div class="val" style="font-size:12px;">${statusAr} / ${statusRu}</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Услуги / الخدمات</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:40px;">#</th>
+          <th style="text-align:right;">الخدمة / Услуга</th>
+          <th style="width:60px;text-align:center;">كمية</th>
+          <th style="width:120px;text-align:left;">السعر / Цена</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${itemRows}
+      </tbody>
+    </table>
+
+    <div class="totals-box">
+      <div class="total-row">
+        <span class="lbl">الإجمالي / Итого</span>
+        <span class="val">${n(o.price).toLocaleString('ru-RU')} ₽</span>
+      </div>
+      ${n(o.deposit)>0?`<div class="total-row"><span class="lbl">الحجز / Задаток</span><span class="val" style="color:#d97706;">${n(o.deposit).toLocaleString('ru-RU')} ₽</span></div>`:''}
+      <div class="total-row">
+        <span class="lbl">المدفوع / Оплачено</span>
+        <span class="val" style="color:#16a34a;">${n(o.paid).toLocaleString('ru-RU')} ₽</span>
+      </div>
+      <div class="total-row big">
+        <span class="lbl">${n(o.remaining)>0?'المتبقي / Остаток':'الحالة'}</span>
+        <span class="val">${n(o.remaining)>0?n(o.remaining).toLocaleString('ru-RU')+' ₽':''}</span>
+      </div>
+      ${n(o.remaining)<=0
+        ? '<div class="paid-badge">✅ مسدد بالكامل / Оплачено полностью</div>'
+        : `<div class="debt-badge">⚠️ متبقي / Осталось: ${n(o.remaining).toLocaleString('ru-RU')} ₽</div>`
+      }
+    </div>
+  </div>
+  <div class="footer">
+    <div class="footer-brand">${officeName}</div>
+    <div class="footer-info">${officeAddr}${officePhone?'<br>'+officePhone:''}</div>
+  </div>
+</div>
+<button class="print-btn" onclick="window.print()">🖨️ طباعة / Печать</button>
+</body></html>`;
+  const w = window.open('','_blank');
+  if(w) { w.document.write(html); w.document.close(); }
+}
+
+// ===================== ADVANCED REPORTS =====================
+function renderAdvancedStats() {
+  // Top services
+  const svcCount = {};
+  DB.orders.forEach(o=>(o.items||[]).forEach(it=>{
+    const k = it.serviceName||'—';
+    svcCount[k] = (svcCount[k]||0) + n(it.price);
+  }));
+  const topSvcs = Object.entries(svcCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const maxSvc = topSvcs[0]?.[1]||1;
+
+  // Top clients
+  const clientMap = {};
+  DB.orders.forEach(o=>{
+    clientMap[o.client] = (clientMap[o.client]||0) + n(o.price);
+  });
+  const topClients = Object.entries(clientMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const maxCli = topClients[0]?.[1]||1;
+
+  // Workflow stats
+  const wfStats = WF_STEPS.map(s=>({
+    ...s, count: DB.orders.filter(o=>(o.workflow||'new')===s.key).length
+  }));
+
+  const el = document.getElementById('advanced-stats');
+  if(!el) return;
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+      <div class="tbox">
+        <div class="tbox-head"><div class="tbox-title">🏆 ${currentLang==='ru'?'Топ услуги':'أفضل الخدمات'}</div></div>
+        <div style="padding:16px;">
+          ${topSvcs.map(([name,val])=>`
+            <div style="margin-bottom:12px;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                <span style="font-weight:600;color:var(--ink2);">${name.slice(0,40)}${name.length>40?'…':''}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--accent);">${fmt(val)}</span>
+              </div>
+              <div style="height:6px;background:var(--surface3);border-radius:3px;">
+                <div style="height:100%;width:${(val/maxSvc*100).toFixed(0)}%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width 0.5s;"></div>
+              </div>
+            </div>`).join('') || '<div style="color:var(--ink3);font-size:13px;text-align:center;padding:20px;">—</div>'}
+        </div>
+      </div>
+      <div class="tbox">
+        <div class="tbox-head"><div class="tbox-title">👥 ${currentLang==='ru'?'Топ клиенты':'أفضل العملاء'}</div></div>
+        <div style="padding:16px;">
+          ${topClients.map(([name,val])=>`
+            <div style="margin-bottom:12px;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                <span style="font-weight:600;color:var(--ink2);">${name}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--green);">${fmt(val)}</span>
+              </div>
+              <div style="height:6px;background:var(--surface3);border-radius:3px;">
+                <div style="height:100%;width:${(val/maxCli*100).toFixed(0)}%;background:linear-gradient(90deg,var(--green),#4ade80);border-radius:3px;transition:width 0.5s;"></div>
+              </div>
+            </div>`).join('') || '<div style="color:var(--ink3);font-size:13px;text-align:center;padding:20px;">—</div>'}
+        </div>
+      </div>
+    </div>
+    <div class="tbox">
+      <div class="tbox-head"><div class="tbox-title">🔄 ${currentLang==='ru'?'Статистика по этапам':'إحصاء مراحل التنفيذ'}</div></div>
+      <div style="padding:16px;display:grid;grid-template-columns:repeat(7,1fr);gap:8px;">
+        ${wfStats.map(s=>`
+          <div style="text-align:center;padding:12px 6px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:800;color:var(--ink);margin-bottom:4px;">${s.count}</div>
+            <div class="wf-badge ${s.cls}" style="font-size:10px;display:block;text-align:center;">${currentLang==='ru'?s.ru:s.ar}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// Init date display even before login
+updateDate();
+
+// Show app immediately without waiting for API
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, showing app immediately');
+  
+  // Show app
+  const app = document.getElementById('app');
+  if (app) {
+    app.style.display = 'flex';
+    app.classList.add('visible');
+  }
+  
+  // Hide login
+  const login = document.getElementById('login');
+  if (login) {
+    login.style.display = 'none';
+  }
+  
+  // Set user info
+  const tbUser = document.getElementById('tbUser');
+  if (tbUser) {
+    tbUser.textContent = 'Admin User';
+  }
+  
+  const tbDate = document.getElementById('tbDate');
+  if (tbDate) {
+    tbDate.textContent = new Date().toLocaleDateString('ar-EG');
+  }
+  
+  console.log('App displayed successfully');
+});
+</script>
+</body>
+</html>

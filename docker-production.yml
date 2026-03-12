@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./glagol-pro-v5.html:/usr/share/nginx/html/index.html:ro
+    depends_on:
+      - backend
+    networks:
+      - glagol-network
+
+  backend:
+    build: .
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/glagol_pro
+      - HOST=0.0.0.0
+    depends_on:
+      - mongodb
+    networks:
+      - glagol-network
+
+  mongodb:
+    image: mongo:6.0
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - glagol-network
+
+volumes:
+  mongodb_data:
+
+networks:
+    glagol-network:
+      driver: bridge
